@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Educacional de Bombas Hidráulicas - IFF</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <title>Suíte Multisimulador de Bombas Hidráulicas</title>
+
+  <!-- Framework Visual Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -13,56 +13,30 @@
       theme: {
         extend: {
           colors: {
-            apple: {
-              bg: '#08090d',
-              card: '#12141c',
-              glass: 'rgba(255, 255, 255, 0.04)',
-              border: 'rgba(255, 255, 255, 0.08)',
-              accent: '#007aff',
-              emerald: '#30d158',
-              rose: '#ff453a',
-              amber: '#ffd60a',
-              purple: '#bf5af2'
-            }
-          },
-          fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif']
+            bgDark: '#080c14',
+            cardDark: '#0f172a',
+            accentBlue: '#3b82f6',
+            suctionGreen: '#22c55e',
+            dischargeRed: '#ef4444'
           }
         }
       }
     }
   </script>
-  
-  <!-- Chart.js para Gráficos Dinâmicos -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Three.js e OrbitControls para Animação 3D Industrial -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  
-  <!-- FontAwesome Ícones -->
+
+  <!-- Ícones FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     body {
-      background-color: #08090d;
-      color: #f5f5f7;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      -webkit-font-smoothing: antialiased;
+      background-color: #080c14;
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-
-    .glass-panel {
-      background: rgba(18, 20, 28, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-
     input[type=range] {
       -webkit-appearance: none;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      background: #1e293b;
+      border-radius: 6px;
       height: 6px;
     }
     input[type=range]::-webkit-slider-thumb {
@@ -70,1180 +44,530 @@
       height: 18px;
       width: 18px;
       border-radius: 50%;
-      background: #007aff;
+      background: #3b82f6;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 122, 255, 0.5);
-      transition: transform 0.1s ease, background-color 0.1s ease;
-    }
-    input[type=range]::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-      background: #3395ff;
-    }
-
-    .nav-pill {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .nav-pill.active {
-      background: #007aff;
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
-    }
-
-    .tab-content {
-      animation: fadeIn 0.35s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-6">
 
   <!-- CABEÇALHO DA APLICAÇÃO -->
-  <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 py-3">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-      
-      <!-- LOGO E TÍTULO -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-          <i class="fa-solid fa-water text-lg"></i>
-        </div>
-        <div>
-          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-            Simulador de Bombas Hidráulicas
-            <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">v3.0 3D</span>
-          </h1>
-          <p class="text-xs text-slate-400">Instituto Federal Fluminense (IFF) • Prof. Jorge Lucas</p>
-        </div>
+  <header class="max-w-7xl w-full mx-auto mb-4 bg-slate-900/90 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl font-bold">
+        <i class="fa-solid fa-pump-soap"></i>
       </div>
+      <div>
+        <h1 class="text-xl font-bold text-white tracking-wide">Suíte de Bombas Hidráulicas</h1>
+        <p class="text-xs text-slate-400">Simulação de Deslocamento Positivo • Engenharia e Automação</p>
+      </div>
+    </div>
 
-      <!-- CONTROLE SEGMENTADO DE NAVEGAÇÃO -->
-      <nav class="flex p-1 bg-white/5 rounded-2xl border border-white/10 text-xs overflow-x-auto max-w-full">
-        <button onclick="switchTab('simulador3d')" id="tab-simulador3d" class="nav-pill active px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-cube text-amber-400"></i> Animação 3D Industrial
-        </button>
-        <button onclick="switchTab('classificador')" id="tab-classificador" class="nav-pill px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-shapes"></i> Classificação
-        </button>
-        <button onclick="switchTab('calculadora')" id="tab-calculadora" class="nav-pill px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-calculator"></i> Dimensionamento
-        </button>
-        <button onclick="switchTab('cavitacao')" id="tab-cavitacao" class="nav-pill px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-triangle-exclamation"></i> Cavitação 2D
-        </button>
-        <button onclick="switchTab('associacao')" id="tab-associacao" class="nav-pill px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-diagram-project"></i> Associação
-        </button>
-        <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-pill px-3.5 py-1.5 rounded-xl font-medium text-slate-300 flex items-center gap-1.5 whitespace-nowrap">
-          <i class="fa-solid fa-graduation-cap"></i> Quiz IFF
-        </button>
-      </nav>
-
+    <!-- NAVEGAÇÃO ENTRE TIPOS DE BOMBAS -->
+    <div class="flex flex-wrap gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800" id="pump-tabs">
+      <button onclick="switchPump('gear')" id="tab-gear" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow">Engrenagens</button>
+      <button onclick="switchPump('lobe')" id="tab-lobe" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Lóbulos</button>
+      <button onclick="switchPump('screw')" id="tab-screw" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Parafusos</button>
+      <button onclick="switchPump('vane')" id="tab-vane" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas</button>
     </div>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 my-2">
+  <!-- CORPO PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
 
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 0: NOVO SIMULADOR 3D INDUSTRIAL (THREE.JS) -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-simulador3d" class="tab-content">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Simulador 3D Interativo de Processo Industrial</h2>
-        <p class="text-sm text-slate-400">Animação tridimensional completa da bomba com carcaça transparente (corte mecânico), estator, rotor e escoamento de fluido.</p>
+    <!-- ÁREA DE VISUALIZAÇÃO (CANVAS) -->
+    <div class="lg:col-span-8 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between shadow-xl">
+      <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
+        <span class="font-semibold text-slate-200" id="pump-title-display"><i class="fa-solid fa-microchip text-blue-400 mr-1"></i> Bomba de Engrenagens Externas</span>
+        <span id="txt-status" class="text-emerald-400 font-mono font-bold">Em Operação</span>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- PAINEL DE CONTROLES 3D (4 COLUNAS) -->
-        <div class="lg:col-span-4 glass-panel p-6 rounded-2xl space-y-5">
-          <h3 class="text-base font-bold text-white border-b border-white/10 pb-3 flex items-center justify-between">
-            <span>Controles do Modelo 3D</span>
-            <i class="fa-solid fa-sliders text-blue-400"></i>
-          </h3>
-
-          <!-- Rotação do Rotor (RPM) -->
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="slider-rpm3d" class="text-slate-300">Velocidade de Rotação (RPM):</label>
-              <span id="val-rpm3d" class="text-blue-400 font-mono">1750 RPM</span>
-            </div>
-            <input type="range" id="slider-rpm3d" min="0" max="3600" step="50" value="1750" class="w-full cursor-pointer" oninput="update3DControls()">
-          </div>
-
-          <!-- Transparência da Carcaça (Cutaway) -->
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="slider-opacity3d" class="text-slate-300">Transparência da Carcaça (Corte):</label>
-              <span id="val-opacity3d" class="text-blue-400 font-mono">50 %</span>
-            </div>
-            <input type="range" id="slider-opacity3d" min="10" max="100" step="5" value="50" class="w-full cursor-pointer" oninput="update3DControls()">
-          </div>
-
-          <!-- Velocidade das Partículas do Fluido -->
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="slider-flow3d" class="text-slate-300">Vazão do Fluido (Velocidade):</label>
-              <span id="val-flow3d" class="text-blue-400 font-mono">100 %</span>
-            </div>
-            <input type="range" id="slider-flow3d" min="0" max="200" step="10" value="100" class="w-full cursor-pointer" oninput="update3DControls()">
-          </div>
-
-          <!-- Opções Estruturais -->
-          <div class="space-y-3 pt-2 border-t border-white/10">
-            <label class="flex items-center gap-3 cursor-pointer text-xs font-medium text-slate-300">
-              <input type="checkbox" id="check-wireframe" class="w-4 h-4 rounded bg-white/10 border-white/20 text-blue-600 focus:ring-0 cursor-pointer" onchange="toggle3DWireframe(this.checked)">
-              <span>Modo Estriado / Wireframe (Estrutura CAD)</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer text-xs font-medium text-slate-300">
-              <input type="checkbox" id="check-particles" checked class="w-4 h-4 rounded bg-white/10 border-white/20 text-blue-600 focus:ring-0 cursor-pointer" onchange="toggle3DParticles(this.checked)">
-              <span>Exibir Partículas de Escoamento de Fluido</span>
-            </label>
-          </div>
-
-          <!-- Dica Didática -->
-          <div class="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl text-xs text-blue-300 space-y-1">
-            <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-hand-pointer"></i> Interação da Câmera 3D:</p>
-            <p>• <strong>Girar:</strong> Clique com o botão esquerdo e arraste.</p>
-            <p>• <strong>Zoom:</strong> Role a roda do mouse (Scroll).</p>
-            <p>• <strong>Mover (Pan):</strong> Clique com o botão direito e arraste.</p>
-          </div>
-        </div>
-
-        <!-- TELA CANVAS THREE.JS 3D (8 COLUNAS) -->
-        <div class="lg:col-span-8 glass-panel rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden">
-          
-          <div class="flex justify-between items-center text-xs text-slate-400 mb-2 px-2 z-10">
-            <span class="flex items-center gap-1.5 font-bold text-white"><i class="fa-solid fa-cube text-amber-400"></i> Visualizador WebGL 3D</span>
-            <span class="bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 text-[11px] font-semibold flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Animação em Tempo Real
-            </span>
-          </div>
-
-          <!-- CONTAINER ONDE O THREE.JS SERÁ RENDERIZADO -->
-          <div id="container-3d" class="w-full h-[460px] bg-slate-950/90 rounded-xl border border-white/10 relative overflow-hidden cursor-grab active:cursor-grabbing"></div>
-
-          <!-- LEGENDA TÉCNICA -->
-          <div class="mt-3 flex flex-wrap items-center justify-around text-xs text-slate-400 gap-2 z-10">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-amber-500 rounded-sm inline-block"></span> Carcaça / Voluta</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-blue-500 rounded-sm inline-block"></span> Impulsor / Rotor Interno</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-slate-400 rounded-sm inline-block"></span> Motor Elétrico & Eixo</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-cyan-400 rounded-full inline-block"></span> Fluido em Movimento</span>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 1: CLASSIFICADOR DE BOMBAS -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-classificador" class="tab-content hidden">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Classificação das Bombas Hidrostáticas</h2>
-        <p class="text-sm text-slate-400">Explore as arquiteturas de deslocamento positivo empregadas na indústria e mobilidade.</p>
+      <!-- CANVAS DINÂMICO -->
+      <div class="w-full h-[440px] bg-slate-950 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+        <canvas id="mainCanvas" class="w-full h-full block cursor-crosshair"></canvas>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Engrenagens -->
-        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-blue-500/50 transition-all duration-300 group">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg border border-blue-500/20 group-hover:scale-110 transition">
-                <i class="fa-solid fa-gear"></i>
-              </div>
-              <span class="bg-blue-500/10 text-blue-400 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-blue-500/20">Deslocamento Fixo</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">Engrenagens</h3>
-            <p class="text-xs text-slate-400 mb-4 leading-relaxed">O fluido é conduzido mecanicamente entre os vãos dos dentes da engrenagem e a carcaça periférica.</p>
-            <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-xs space-y-1 mb-4">
-              <p><strong class="text-slate-200">Subtipos:</strong> Engrenagens Externas, Internas e Gerotor.</p>
-              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 250 bar.</p>
-            </div>
-            <div class="space-y-2 text-xs">
-              <div class="text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span><strong>Vantagens:</strong> Baixo custo, alta robustez.</span></div>
-              <div class="text-rose-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span><strong>Desvantagens:</strong> Fluxo pulsante, volume fixo.</span></div>
-            </div>
-          </div>
+      <!-- LEGENDA DE FLUXO DE PRESSÃO -->
+      <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-400 text-center">
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-emerald-500 rounded-sm"></span>
+          <span>Sucção (Baixa P)</span>
         </div>
-
-        <!-- Palhetas -->
-        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-purple-500/50 transition-all duration-300 group">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 group-hover:scale-110 transition">
-                <i class="fa-solid fa-fan"></i>
-              </div>
-              <span class="bg-purple-500/10 text-purple-400 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-purple-500/20">Fixo / Variável</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">Palhetas</h3>
-            <p class="text-xs text-slate-400 mb-4 leading-relaxed">Palhetas radiais deslizam nas ranhuras do rotor mantendo vedação contínua no anel estator.</p>
-            <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-xs space-y-1 mb-4">
-              <p><strong class="text-slate-200">Subtipos:</strong> Compensada por Pressão, Balanceada.</p>
-              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 210 bar.</p>
-            </div>
-            <div class="space-y-2 text-xs">
-              <div class="text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span><strong>Vantagens:</strong> Silenciosa, fluxo uniforme.</span></div>
-              <div class="text-rose-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span><strong>Desvantagens:</strong> Sensível à contaminação.</span></div>
-            </div>
-          </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-rose-500 rounded-sm"></span>
+          <span>Recalque (Alta P)</span>
         </div>
-
-        <!-- Pistões -->
-        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-amber-500/50 transition-all duration-300 group">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20 group-hover:scale-110 transition">
-                <i class="fa-solid fa-sliders"></i>
-              </div>
-              <span class="bg-amber-500/10 text-amber-400 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-amber-500/20">Alta Pressão</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">Pistões</h3>
-            <p class="text-xs text-slate-400 mb-4 leading-relaxed">Pistões alternativos retificados acionados por disco inclinado (Swashplate).</p>
-            <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-xs space-y-1 mb-4">
-              <p><strong class="text-slate-200">Subtipos:</strong> Axiais e Radiais.</p>
-              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 420 bar.</p>
-            </div>
-            <div class="space-y-2 text-xs">
-              <div class="text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> <span><strong>Vantagens:</strong> Altíssima eficiência, vazão regulável.</span></div>
-              <div class="text-rose-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> <span><strong>Desvantagens:</strong> Maior custo financeiro.</span></div>
-            </div>
-          </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-blue-500 rounded-sm"></span>
+          <span>Rotores / Elementos</span>
+        </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-amber-400 rounded-full"></span>
+          <span>Fluido / Partículas</span>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 2: CALCULADORA DE DIMENSIONAMENTO -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-calculadora" class="tab-content hidden">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Dimensionamento e Eficiência Energética</h2>
-        <p class="text-sm text-slate-400">Configure os parâmetros operacionais da bomba para calcular potências e perdas.</p>
-      </div>
+    <!-- PAINEL DE CONTROLE E TELEMETRIA -->
+    <div class="lg:col-span-4 bg-slate-900/80 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between space-y-4 shadow-xl">
+      <div>
+        <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
+          <span>Controles Operacionais</span>
+          <i class="fa-solid fa-sliders text-blue-400"></i>
+        </h2>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 glass-panel p-6 rounded-2xl space-y-5">
-          <h3 class="text-base font-bold text-white border-b border-white/10 pb-3 flex items-center justify-between">
-            <span>Parâmetros do Motor e Bomba</span>
-            <i class="fa-solid fa-sliders text-blue-400"></i>
-          </h3>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="input-n" class="text-slate-300">Rotação do Motor (n):</label>
-              <span id="val-n" class="text-blue-400 font-mono">1750 RPM</span>
-            </div>
-            <input type="range" id="input-n" min="800" max="3600" step="50" value="1750" class="w-full cursor-pointer" oninput="updateCalculator()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="input-vg" class="text-slate-300">Cilindrada / Volume (Vg):</label>
-              <span id="val-vg" class="text-blue-400 font-mono">28.0 cm³/rot</span>
-            </div>
-            <input type="range" id="input-vg" min="2.5" max="100" step="0.5" value="28" class="w-full cursor-pointer" oninput="updateCalculator()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="input-p" class="text-slate-300">Pressão do Sistema (P):</label>
-              <span id="val-p" class="text-blue-400 font-mono">150 bar</span>
-            </div>
-            <input type="range" id="input-p" min="10" max="350" step="5" value="150" class="w-full cursor-pointer" oninput="updateCalculator()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="input-etav" class="text-slate-300">Rendimento Volumétrico (ηv):</label>
-              <span id="val-etav" class="text-blue-400 font-mono">92 %</span>
-            </div>
-            <input type="range" id="input-etav" min="70" max="99" step="1" value="92" class="w-full cursor-pointer" oninput="updateCalculator()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-2">
-              <label for="input-etamh" class="text-slate-300">Rend. Mecânico-Hidráulico (ηm-h):</label>
-              <span id="val-etamh" class="text-blue-400 font-mono">87 %</span>
-            </div>
-            <input type="range" id="input-etamh" min="70" max="98" step="1" value="87" class="w-full cursor-pointer" oninput="updateCalculator()">
-          </div>
-        </div>
-
-        <div class="lg:col-span-7 space-y-6">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="glass-panel p-4 rounded-2xl text-center flex flex-col justify-between">
-              <p class="text-[11px] font-medium text-slate-400">Vazão Real (Qreal)</p>
-              <p id="res-qreal" class="text-xl font-bold font-mono text-emerald-400 my-1">0.0 L/min</p>
-              <p id="res-qteorica" class="text-[10px] text-slate-500">Teórica: 0.0 L/min</p>
-            </div>
-
-            <div class="glass-panel p-4 rounded-2xl text-center flex flex-col justify-between">
-              <p class="text-[11px] font-medium text-slate-400">Torque de Entrada (M)</p>
-              <p id="res-torque" class="text-xl font-bold font-mono text-amber-400 my-1">0.0 N·m</p>
-              <p class="text-[10px] text-slate-500">Eixo do Motor</p>
-            </div>
-
-            <div class="glass-panel p-4 rounded-2xl text-center flex flex-col justify-between">
-              <p class="text-[11px] font-medium text-slate-400">Potência Absorvida</p>
-              <p id="res-potkw" class="text-xl font-bold font-mono text-blue-400 my-1">0.0 kW</p>
-              <p id="res-potcv" class="text-[10px] text-slate-300 font-medium">0.0 CV</p>
-            </div>
-
-            <div class="glass-panel p-4 rounded-2xl text-center flex flex-col justify-between">
-              <p class="text-[11px] font-medium text-slate-400">Rendimento Total (ηT)</p>
-              <p id="res-etatotal" class="text-xl font-bold font-mono text-purple-400 my-1">0.0 %</p>
-              <p class="text-[10px] text-slate-500">ηv · ηm-h</p>
-            </div>
-          </div>
-
-          <div class="glass-panel p-5 rounded-2xl">
-            <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3">Balanço de Potência (Potência Útil vs Perdas por Atrito/Calor)</h4>
-            <div class="h-52">
-              <canvas id="chartPotencia"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 3: SIMULADOR DE CAVITAÇÃO 2D -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-cavitacao" class="tab-content hidden">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Simulação Física de Cavitação (Vista 2D)</h2>
-        <p class="text-sm text-slate-400">Visualize em tempo real o comportamento microfísico do fluido sob vácuo de sucção.</p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-4 glass-panel p-6 rounded-2xl space-y-4">
-          <h3 class="text-base font-bold text-white border-b border-white/10 pb-3">Parâmetros de Sucção</h3>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <label for="cav-diam" class="text-slate-300">Diâmetro Interno do Tubo:</label>
-              <span id="val-cav-diam" class="text-blue-400 font-mono">20 mm</span>
-            </div>
-            <input type="range" id="cav-diam" min="10" max="38" step="1" value="20" class="w-full cursor-pointer" oninput="updateCavitation()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <label for="cav-visc" class="text-slate-300">Viscosidade do Óleo:</label>
-              <span id="val-cav-visc" class="text-blue-400 font-mono">68 cSt</span>
-            </div>
-            <input type="range" id="cav-visc" min="15" max="200" step="5" value="68" class="w-full cursor-pointer" oninput="updateCavitation()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <label for="cav-rpm" class="text-slate-300">Velocidade de Rotação (RPM):</label>
-              <span id="val-cav-rpm" class="text-blue-400 font-mono">1800 RPM</span>
-            </div>
-            <input type="range" id="cav-rpm" min="600" max="3000" step="100" value="1800" class="w-full cursor-pointer" oninput="updateCavitation()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <label for="cav-obstr" class="text-slate-300">Obstrução do Filtro de Sucção:</label>
-              <span id="val-cav-obstr" class="text-blue-400 font-mono">30 %</span>
-            </div>
-            <input type="range" id="cav-obstr" min="0" max="95" step="5" value="30" class="w-full cursor-pointer" oninput="updateCavitation()">
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-semibold mb-1">
-              <label for="cav-alt" class="text-slate-300">Altura da Sucção (h):</label>
-              <span id="val-cav-alt" class="text-blue-400 font-mono">0.5 m</span>
-            </div>
-            <input type="range" id="cav-alt" min="-0.5" max="2.5" step="0.1" value="0.5" class="w-full cursor-pointer" oninput="updateCavitation()">
-          </div>
-        </div>
-
-        <div class="lg:col-span-8 space-y-4">
-          <div id="status-card" class="glass-panel p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-300">
-            <div>
-              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Diagnóstico do Escoamento</p>
-              <p id="status-text" class="text-lg font-bold text-emerald-400 flex items-center gap-2">🟢 Operação Normal</p>
-              <p id="status-desc" class="text-xs text-slate-300 mt-1">Pressão de sucção adequada. Ausência de vaporização do fluido.</p>
-            </div>
-            <div class="bg-white/5 px-4 py-2 rounded-xl border border-white/10 text-right min-w-[140px]">
-              <p class="text-[10px] text-slate-400 uppercase">Vácuo na Entrada</p>
-              <p id="vac-val" class="text-xl font-mono font-bold text-white">-0.12 bar</p>
-              <p id="vac-mmhg" class="text-[11px] text-slate-400 font-mono">90 mmHg</p>
-            </div>
-          </div>
-
-          <div class="glass-panel rounded-2xl p-4 relative overflow-hidden">
-            <canvas id="canvasCavitacao" class="w-full h-64 bg-slate-950/80 rounded-xl border border-white/5"></canvas>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 4: ASSOCIAÇÃO DE BOMBAS -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-associacao" class="tab-content hidden">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Associação de Bombas Hidráulicas</h2>
-        <p class="text-sm text-slate-400">Análise dinâmica do comportamento das curvas características P × Q em Série e Paralelo.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button onclick="setAssociation('individual')" id="btn-assoc-ind" class="assoc-btn glass-panel p-5 rounded-2xl text-left hover:border-blue-500 transition duration-300">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-white text-sm">1 Bomba isolada</span>
-            <i class="fa-solid fa-circle-dot text-blue-400"></i>
-          </div>
-          <p class="text-xs text-slate-400">Operação padrão. Vazão nominal Q1 e pressão P1.</p>
+        <!-- Botão Play / Pause -->
+        <button id="btn-play" onclick="togglePlay()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 mb-4">
+          <i id="icon-play" class="fa-solid fa-pause"></i>
+          <span id="txt-play">Pausar Simulação</span>
         </button>
 
-        <button onclick="setAssociation('serie')" id="btn-assoc-serie" class="assoc-btn glass-panel p-5 rounded-2xl text-left hover:border-blue-500 transition duration-300">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-white text-sm">2 Bombas em Série</span>
-            <i class="fa-solid fa-link text-blue-400"></i>
+        <!-- Slider Velocidade RPM -->
+        <div class="mb-4">
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <label for="slider-rpm" class="text-slate-300">Velocidade do Eixo:</label>
+            <span id="val-rpm" class="text-blue-400 font-mono">1200 RPM</span>
           </div>
-          <p class="text-xs text-slate-400">Qtotal = Q1 | Ptotal = P1 + P2 (Duplica Pressão)</p>
-        </button>
-
-        <button onclick="setAssociation('paralelo')" id="btn-assoc-par" class="assoc-btn glass-panel p-5 rounded-2xl text-left hover:border-blue-500 transition duration-300">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-white text-sm">2 Bombas em Paralelo</span>
-            <i class="fa-solid fa-code-fork text-blue-400"></i>
-          </div>
-          <p class="text-xs text-slate-400">Qtotal = Q1 + Q2 | Ptotal = P1 (Duplica Vazão)</p>
-        </button>
-      </div>
-
-      <div class="glass-panel p-6 rounded-2xl">
-        <h3 class="text-sm font-bold text-white mb-1">Curva Característica Resultante (Pressão × Vazão)</h3>
-        <p id="assoc-explicacao" class="text-xs text-slate-400 mb-4">Selecione uma configuração para visualizar a curva característica.</p>
-        <div class="h-72">
-          <canvas id="chartAssociacao"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- ---------------------------------------------------- -->
-    <!-- MÓDULO 5: QUIZ IFF -->
-    <!-- ---------------------------------------------------- -->
-    <section id="mod-quiz" class="tab-content hidden">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold tracking-tight text-white mb-1">Quiz de Fixação e Exercícios Práticos</h2>
-        <p class="text-sm text-slate-400">Problemas resolvidos aplicados nos cursos do Instituto Federal Fluminense.</p>
-      </div>
-
-      <div class="max-w-3xl mx-auto glass-panel p-6 rounded-2xl space-y-6">
-        <div class="flex justify-between items-center border-b border-white/10 pb-4">
-          <div>
-            <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Questão <span id="quiz-num">1</span> de 5</span>
-            <h3 id="quiz-titulo" class="text-base font-bold text-white mt-0.5">Cálculo de Vazão Real</h3>
-          </div>
-          <div class="bg-white/5 px-3 py-1.5 rounded-xl border border-white/10 text-right">
-            <span class="text-[10px] text-slate-400 block uppercase">Pontuação</span>
-            <span id="quiz-score" class="text-lg font-bold font-mono text-emerald-400">0</span>
-          </div>
+          <input type="range" id="slider-rpm" min="0" max="3000" step="100" value="1200" class="w-full cursor-pointer" oninput="updateControls()">
         </div>
 
-        <p id="quiz-pergunta" class="text-sm text-slate-200 leading-relaxed font-normal"></p>
-
-        <div id="quiz-opcoes" class="space-y-3"></div>
-
-        <div id="quiz-explicacao" class="hidden bg-slate-950/80 p-4 rounded-xl border border-white/10 text-xs text-slate-300 space-y-2">
-          <p class="font-bold text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-lightbulb"></i> Resolução Passo a Passo:</p>
-          <p id="quiz-passos" class="leading-relaxed"></p>
-        </div>
-
-        <div class="flex justify-end pt-2">
-          <button id="btn-next-quiz" onclick="proximaQuestao()" class="hidden bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/30 transition">
-            Próxima Questão <i class="fa-solid fa-arrow-right ml-1"></i>
-          </button>
+        <!-- Slider Parâmetro Específico -->
+        <div class="mb-4">
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <label id="lbl-param" for="slider-param" class="text-slate-300">Número de Dentes:</label>
+            <span id="val-param" class="text-blue-400 font-mono">10</span>
+          </div>
+          <input type="range" id="slider-param" min="6" max="16" step="1" value="10" class="w-full cursor-pointer" oninput="updateControls()">
         </div>
       </div>
-    </section>
+
+      <!-- PAINEL EDUCATIVO E TELEMETRIA -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+        <div class="flex justify-between border-b border-slate-800 pb-2">
+          <span class="font-bold text-slate-200">Telemetria Calculada</span>
+          <i class="fa-solid fa-chart-line text-emerald-400"></i>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Vazão Teórica Estimada (Q):</span>
+          <span id="calc-vazao" class="font-mono font-bold text-emerald-400">36.0 L/min</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Eficiência Volumétrica:</span>
+          <span id="calc-eficiencia" class="font-mono text-slate-200">92%</span>
+        </div>
+
+        <!-- Explicação Didática Dinâmica -->
+        <div class="pt-2 border-t border-slate-800/80">
+          <p class="font-semibold text-slate-300 mb-1">Princípio de Funcionamento:</p>
+          <p id="desc-mecanismo" class="text-[11px] text-slate-400 leading-relaxed italic">
+            O fluido é conduzido nos espaços entre os dentes das engrenagens e a carcaça periférica. O acoplamento central impede o retorno do óleo.
+          </p>
+        </div>
+      </div>
+    </div>
 
   </main>
 
-  <footer class="glass-panel border-t border-white/10 py-4 px-6 text-center text-xs text-slate-500 mt-auto">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-      <p>Simulador Educacional de Engenharia • Instituto Federal Fluminense (IFF) • 2026</p>
-      <p class="text-[11px] text-slate-600">Desenvolvido com suporte WebGL 3D (Three.js)</p>
-    </div>
+  <footer class="max-w-7xl w-full mx-auto mt-4 text-center text-xs text-slate-500">
+    <p>Suíte Didática de Simulação Industrial • Desenvolvida em HTML5 Canvas e JavaScript Puro</p>
   </footer>
 
-  <!-- ---------------------------------------------------- -->
-  <!-- LÓGICA E SCRIPTS JAVASCRIPT EMBEDDED -->
-  <!-- ---------------------------------------------------- -->
+  <!-- MOTOR DE SIMULAÇÃO E RENDERIZAÇÃO -->
   <script>
     /* ======================================================
-       1. NAVEGAÇÃO ENTRE ABAS
+       ESTADO GLOBAL DA APLICAÇÃO
        ====================================================== */
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-pill').forEach(btn => btn.classList.remove('active'));
-      
-      document.getElementById(`mod-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-${tabId}`).classList.add('active');
+    let canvas, ctx;
+    let activePump = 'gear'; // 'gear', 'lobe', 'screw', 'vane'
+    let isRunning = true;
+    let angle = 0;
 
-      if (tabId === 'simulador3d') onWindowResize3D();
-      if (tabId === 'calculadora') updateCalculator();
-      if (tabId === 'cavitacao') updateCavitation();
-      if (tabId === 'associacao') renderChartAssociacao();
-    }
+    // Parâmetros operacionais
+    let rpm = 1200;
+    let customParam = 10; // Dentes (Gear), Lóbulos (Lobe), Passo (Screw), Palhetas (Vane)
+
+    // Sistema de partículas
+    const particles = [];
+    const numParticles = 80;
 
     /* ======================================================
-       2. MOTOR RENDERIZADOR 3D INDUSTRIAL (THREE.JS)
+       INICIALIZAÇÃO E CONFIGURAÇÃO
        ====================================================== */
-    let scene3D, camera3D, renderer3D, controls3D;
-    let pumpImpeller, pumpCasingMaterial, motorShaft;
-    let particleSystem3D, particlePositions, particleVelocities;
-    const numParticles = 250;
-
-    function init3DSimulator() {
-      const container = document.getElementById('container-3d');
-      if (!container) return;
-
-      // Cena 3D
-      scene3D = new THREE.Scene();
-      scene3D.background = new THREE.Color(0x050608);
-
-      // Câmera
-      camera3D = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera3D.position.set(22, 14, 28);
-
-      // Renderizador WebGL
-      renderer3D = new THREE.WebGLRenderer({ antialias: true });
-      renderer3D.setSize(container.clientWidth, container.clientHeight);
-      renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer3D.shadowMap.enabled = true;
-      container.appendChild(renderer3D.domElement);
-
-      // Controle de Órbita da Câmera
-      controls3D = new THREE.OrbitControls(camera3D, renderer3D.domElement);
-      controls3D.enableDamping = true;
-      controls3D.dampingFactor = 0.05;
-      controls3D.maxPolarAngle = Math.PI / 2 + 0.1;
-
-      // Iluminação Industrial
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-      scene3D.add(ambientLight);
-
-      const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
-      dirLight1.position.set(15, 25, 20);
-      scene3D.add(dirLight1);
-
-      const dirLight2 = new THREE.DirectionalLight(0x007aff, 0.6);
-      dirLight2.position.set(-15, -10, -15);
-      scene3D.add(dirLight2);
-
-      // CONSTRUÇÃO DA BOMBA INDUSTRIAL EM 3D
-      buildIndustrialPumpMesh();
-      buildFluidParticles3D();
-
-      // Ajuste de Redimensionamento da Janela
-      window.addEventListener('resize', onWindowResize3D);
-
-      // Iniciar Loop de Animação 3D
-      animate3D();
-    }
-
-    function buildIndustrialPumpMesh() {
-      const pumpGroup = new THREE.Group();
-
-      // 1. Base Mecânica / Chassi
-      const baseGeo = new THREE.BoxGeometry(26, 1.2, 12);
-      const baseMat = new THREE.MeshStandardMaterial({ color: 0x1f2430, roughness: 0.6, metalness: 0.8 });
-      const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-      baseMesh.position.set(0, -5, 0);
-      pumpGroup.add(baseMesh);
-
-      // 2. Motor Elétrico
-      const motorGeo = new THREE.CylinderGeometry(4.2, 4.2, 10, 32);
-      const motorMat = new THREE.MeshStandardMaterial({ color: 0x2b3245, roughness: 0.4, metalness: 0.6 });
-      const motorMesh = new THREE.Mesh(motorGeo, motorMat);
-      motorMesh.rotation.z = Math.PI / 2;
-      motorMesh.position.set(-7, 0, 0);
-      pumpGroup.add(motorMesh);
-
-      // Aletas de Refrigeração do Motor
-      for (let i = -3; i <= 3; i += 1.2) {
-        const finGeo = new THREE.CylinderGeometry(4.5, 4.5, 0.3, 32);
-        const finMesh = new THREE.Mesh(finGeo, motorMat);
-        finMesh.rotation.z = Math.PI / 2;
-        finMesh.position.set(-7 + i, 0, 0);
-        pumpGroup.add(finMesh);
-      }
-
-      // 3. Eixo de Transmissão Mecânica
-      const shaftGeo = new THREE.CylinderGeometry(0.8, 0.8, 8, 16);
-      const shaftMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.2, metalness: 0.9 });
-      motorShaft = new THREE.Mesh(shaftGeo, shaftMat);
-      motorShaft.rotation.z = Math.PI / 2;
-      motorShaft.position.set(-1, 0, 0);
-      pumpGroup.add(motorShaft);
-
-      // 4. Carcaça da Voluta (Bomba Transparente / Cutaway)
-      const casingGeo = new THREE.CylinderGeometry(5.5, 5.5, 4, 32, 1, false, 0, Math.PI * 1.75); // Corte de ângulo de visão interna
-      pumpCasingMaterial = new THREE.MeshStandardMaterial({
-        color: 0xd97706, // Tom Ambar/Laranja Industrial
-        roughness: 0.2,
-        metalness: 0.3,
-        transparent: true,
-        opacity: 0.5,
-        side: THREE.DoubleSide
-      });
-      const casingMesh = new THREE.Mesh(casingGeo, pumpCasingMaterial);
-      casingMesh.rotation.x = Math.PI / 2;
-      casingMesh.position.set(5, 0, 0);
-      pumpGroup.add(casingMesh);
-
-      // 5. Rotor / Impulsor Interno (Blades / Palhetas)
-      const impellerGroup = new THREE.Group();
-      const hubGeo = new THREE.CylinderGeometry(1.5, 1.5, 3.2, 16);
-      const hubMat = new THREE.MeshStandardMaterial({ color: 0x007aff, roughness: 0.3, metalness: 0.7 });
-      const hubMesh = new THREE.Mesh(hubGeo, hubMat);
-      impellerGroup.add(hubMesh);
-
-      // Palhetas do Rotor
-      const numBlades = 6;
-      for (let i = 0; i < numBlades; i++) {
-        const bladeGeo = new THREE.BoxGeometry(3.5, 0.3, 2.8);
-        const bladeMesh = new THREE.Mesh(bladeGeo, hubMat);
-        const angle = (i / numBlades) * Math.PI * 2;
-        bladeMesh.position.set(Math.cos(angle) * 2, 0, Math.sin(angle) * 2);
-        bladeMesh.rotation.y = -angle + 0.5;
-        impellerGroup.add(bladeMesh);
-      }
-      impellerGroup.rotation.x = Math.PI / 2;
-      impellerGroup.position.set(5, 0, 0);
-      pumpImpeller = impellerGroup;
-      pumpGroup.add(pumpImpeller);
-
-      // 6. Tubulação de Sucção (Entrada)
-      const suctionGeo = new THREE.CylinderGeometry(2, 2, 8, 24);
-      const pipeMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.4, metalness: 0.6, transparent: true, opacity: 0.7 });
-      const suctionMesh = new THREE.Mesh(suctionGeo, pipeMat);
-      suctionMesh.position.set(5, 0, 7);
-      suctionMesh.rotation.x = Math.PI / 2;
-      pumpGroup.add(suctionMesh);
-
-      // 7. Tubulação de Descarga (Saída em Altura)
-      const dischargeGeo = new THREE.CylinderGeometry(1.6, 1.6, 8, 24);
-      const dischargeMesh = new THREE.Mesh(dischargeGeo, pipeMat);
-      dischargeMesh.position.set(5, 6, 0);
-      pumpGroup.add(dischargeMesh);
-
-      scene3D.add(pumpGroup);
-    }
-
-    function buildFluidParticles3D() {
-      const geometry = new THREE.BufferGeometry();
-      particlePositions = new Float32Array(numParticles * 3);
-      particleVelocities = [];
-
-      for (let i = 0; i < numParticles; i++) {
-        // Inicializar partículas no caminho do tubo de sucção até a saída
-        const progress = Math.random();
-        let x = 5, y = 0, z = 0;
-
-        if (progress < 0.4) {
-          // No tubo de sucção
-          z = 11 - progress * 15;
-          x = 5 + (Math.random() - 0.5) * 2;
-          y = (Math.random() - 0.5) * 2;
-        } else if (progress < 0.7) {
-          // Dentro do rotor da bomba
-          const angle = Math.random() * Math.PI * 2;
-          const rad = Math.random() * 4;
-          x = 5 + Math.cos(angle) * rad;
-          y = Math.sin(angle) * rad;
-          z = (Math.random() - 0.5) * 2;
-        } else {
-          // Na descarga superior
-          x = 5 + (Math.random() - 0.5) * 1.8;
-          y = (progress - 0.7) * 25;
-          z = (Math.random() - 0.5) * 1.8;
-        }
-
-        particlePositions[i * 3] = x;
-        particlePositions[i * 3 + 1] = y;
-        particlePositions[i * 3 + 2] = z;
-
-        particleVelocities.push({
-          progress: progress,
-          speed: 0.005 + Math.random() * 0.005
-        });
-      }
-
-      geometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-
-      // Textura de Brilho da Partícula
-      const particleMat = new THREE.PointsMaterial({
-        color: 0x38bdf8,
-        size: 0.6,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending
-      });
-
-      particleSystem3D = new THREE.Points(geometry, particleMat);
-      scene3D.add(particleSystem3D);
-    }
-
-    function animate3D() {
-      requestAnimationFrame(animate3D);
-
-      const rpm = parseFloat(document.getElementById('slider-rpm3d')?.value || 1750);
-      const flowMult = parseFloat(document.getElementById('slider-flow3d')?.value || 100) / 100;
-
-      // Rotação do Rotor e Eixo Proporcional ao RPM
-      if (pumpImpeller) pumpImpeller.rotation.z -= (rpm / 60) * 0.05;
-      if (motorShaft) motorShaft.rotation.x -= (rpm / 60) * 0.05;
-
-      // Animação do Fluxo de Partículas 3D
-      if (particleSystem3D && particlePositions) {
-        const positions = particleSystem3D.geometry.attributes.position.array;
-
-        for (let i = 0; i < numParticles; i++) {
-          let p = particleVelocities[i];
-          p.progress += p.speed * (rpm / 1000) * flowMult;
-          if (p.progress > 1) p.progress = 0;
-
-          let x = 5, y = 0, z = 0;
-
-          if (p.progress < 0.4) {
-            z = 11 - (p.progress / 0.4) * 11;
-            x = 5 + Math.sin(p.progress * 20) * 0.8;
-            y = Math.cos(p.progress * 20) * 0.8;
-          } else if (p.progress < 0.7) {
-            const rotAngle = p.progress * 30;
-            const radius = ((p.progress - 0.4) / 0.3) * 4;
-            x = 5 + Math.cos(rotAngle) * radius;
-            y = Math.sin(rotAngle) * radius;
-            z = (Math.random() - 0.5) * 1.5;
-          } else {
-            x = 5 + Math.sin(p.progress * 15) * 0.6;
-            y = ((p.progress - 0.7) / 0.3) * 9;
-            z = Math.cos(p.progress * 15) * 0.6;
-          }
-
-          positions[i * 3] = x;
-          positions[i * 3 + 1] = y;
-          positions[i * 3 + 2] = z;
-        }
-
-        particleSystem3D.geometry.attributes.position.needsUpdate = true;
-      }
-
-      controls3D.update();
-      renderer3D.render(scene3D, camera3D);
-    }
-
-    function update3DControls() {
-      const rpm = document.getElementById('slider-rpm3d').value;
-      const opacity = document.getElementById('slider-opacity3d').value;
-      const flow = document.getElementById('slider-flow3d').value;
-
-      document.getElementById('val-rpm3d').innerText = `${rpm} RPM`;
-      document.getElementById('val-opacity3d').innerText = `${opacity} %`;
-      document.getElementById('val-flow3d').innerText = `${flow} %`;
-
-      if (pumpCasingMaterial) {
-        pumpCasingMaterial.opacity = opacity / 100;
-      }
-    }
-
-    function toggle3DWireframe(enabled) {
-      if (pumpCasingMaterial) pumpCasingMaterial.wireframe = enabled;
-    }
-
-    function toggle3DParticles(enabled) {
-      if (particleSystem3D) particleSystem3D.visible = enabled;
-    }
-
-    function onWindowResize3D() {
-      const container = document.getElementById('container-3d');
-      if (!container || !renderer3D || !camera3D) return;
-      camera3D.aspect = container.clientWidth / container.clientHeight;
-      camera3D.updateProjectionMatrix();
-      renderer3D.setSize(container.clientWidth, container.clientHeight);
-    }
-
-    /* ======================================================
-       3. LÓGICA DA CALCULADORA DE DIMENSIONAMENTO
-       ====================================================== */
-    let chartPotenciaInstance = null;
-
-    function updateCalculator() {
-      const n = parseFloat(document.getElementById('input-n').value);
-      const Vg = parseFloat(document.getElementById('input-vg').value);
-      const P = parseFloat(document.getElementById('input-p').value);
-      const eta_v = parseFloat(document.getElementById('input-etav').value) / 100;
-      const eta_mh = parseFloat(document.getElementById('input-etamh').value) / 100;
-
-      document.getElementById('val-n').innerText = `${n} RPM`;
-      document.getElementById('val-vg').innerText = `${Vg.toFixed(1)} cm³/rot`;
-      document.getElementById('val-p').innerText = `${P} bar`;
-      document.getElementById('val-etav').innerText = `${Math.round(eta_v * 100)} %`;
-      document.getElementById('val-etamh').innerText = `${Math.round(eta_mh * 100)} %`;
-
-      const Q_teorica = (Vg * n) / 1000;
-      const Q_real = Q_teorica * eta_v;
-      const Torque = (Vg * P) / (20 * Math.PI * eta_mh);
-      const Pot_Absorvida_kW = (Q_real * P) / (600 * eta_mh);
-      const Pot_Util_kW = (Q_real * P) / 600;
-      const Pot_Absorvida_CV = Pot_Absorvida_kW * 1.35962;
-      const eta_total = eta_v * eta_mh;
-
-      document.getElementById('res-qreal').innerText = `${Q_real.toFixed(1)} L/min`;
-      document.getElementById('res-qteorica').innerText = `Teórica: ${Q_teorica.toFixed(1)} L/min`;
-      document.getElementById('res-torque').innerText = `${Torque.toFixed(1)} N·m`;
-      document.getElementById('res-potkw').innerText = `${Pot_Absorvida_kW.toFixed(2)} kW`;
-      document.getElementById('res-potcv').innerText = `${Pot_Absorvida_CV.toFixed(2)} CV`;
-      document.getElementById('res-etatotal').innerText = `${(eta_total * 100).toFixed(1)} %`;
-
-      renderChartPotencia(Pot_Util_kW, Math.max(0, Pot_Absorvida_kW - Pot_Util_kW));
-    }
-
-    function renderChartPotencia(potUtil, potPerdas) {
-      const ctx = document.getElementById('chartPotencia').getContext('2d');
-      if (chartPotenciaInstance) chartPotenciaInstance.destroy();
-
-      chartPotenciaInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Balanço de Potência'],
-          datasets: [
-            { label: 'Potência Útil Hidráulica (kW)', data: [potUtil], backgroundColor: '#30d158', borderRadius: 8 },
-            { label: 'Perdas em Calor / Atrito (kW)', data: [potPerdas], backgroundColor: '#ff453a', borderRadius: 8 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#98989d' } },
-            y: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#98989d' } }
-          },
-          plugins: { legend: { labels: { color: '#f5f5f7' } } }
-        }
-      });
-    }
-
-    /* ======================================================
-       4. SIMULAÇÃO 2D E CAVITAÇÃO
-       ====================================================== */
-    let canvas2D, ctxCanvas2D;
-    let particles2D = [];
-    let gearAngle2D = 0;
-
-    function initCanvas2D() {
-      canvas2D = document.getElementById('canvasCavitacao');
-      if (!canvas2D) return;
-
-      canvas2D.width = canvas2D.offsetWidth;
-      canvas2D.height = canvas2D.offsetHeight;
-      ctxCanvas2D = canvas2D.getContext('2d');
-
-      particles2D = [];
-      for (let i = 0; i < 60; i++) {
-        particles2D.push({
-          x: Math.random() * (canvas2D.width * 0.45),
-          y: (canvas2D.height / 2) + (Math.random() * 30 - 15),
-          speed: 1.5 + Math.random() * 2,
-          isBubble: false
-        });
-      }
-
-      requestAnimationFrame(animatePump2D);
-    }
-
-    function updateCavitation() {
-      const diam = parseFloat(document.getElementById('cav-diam').value);
-      const visc = parseFloat(document.getElementById('cav-visc').value);
-      const rpm = parseFloat(document.getElementById('cav-rpm').value);
-      const obstr = parseFloat(document.getElementById('cav-obstr').value);
-      const alt = parseFloat(document.getElementById('cav-alt').value);
-
-      document.getElementById('val-cav-diam').innerText = `${diam} mm`;
-      document.getElementById('val-cav-visc').innerText = `${visc} cSt`;
-      document.getElementById('val-cav-rpm').innerText = `${rpm} RPM`;
-      document.getElementById('val-cav-obstr').innerText = `${obstr} %`;
-      document.getElementById('val-cav-alt').innerText = `${alt.toFixed(1)} m`;
-
-      let vacBar = - (0.04 + (28 / diam)*0.07 + (visc / 100)*0.12 + (rpm / 1800)*0.09 + (obstr / 100)*0.48 + (alt * 0.08));
-      if (vacBar < -0.98) vacBar = -0.98;
-
-      const vacmmHg = Math.abs(vacBar * 750.06);
-      document.getElementById('vac-val').innerText = `${vacBar.toFixed(2)} bar`;
-      document.getElementById('vac-mmhg').innerText = `${Math.round(vacmmHg)} mmHg`;
-
-      const statusText = document.getElementById('status-text');
-      const statusDesc = document.getElementById('status-desc');
-
-      if (vacBar > -0.25) {
-        statusText.className = "text-lg font-bold text-emerald-400 flex items-center gap-2";
-        statusText.innerHTML = "🟢 Operação Normal";
-        statusDesc.innerText = "Pressão de sucção perfeita. Escoamento contínuo.";
-        window.currentCavitationSeverity = 0;
-      } else if (vacBar <= -0.25 && vacBar > -0.50) {
-        statusText.className = "text-lg font-bold text-amber-400 flex items-center gap-2";
-        statusText.innerHTML = "🟡 Risco de Aeração";
-        statusDesc.innerText = "Elevada depressão na sucção. Início de desgaseificação.";
-        window.currentCavitationSeverity = 1;
-      } else {
-        statusText.className = "text-lg font-bold text-rose-500 animate-pulse flex items-center gap-2";
-        statusText.innerHTML = "🔴 CAVITAÇÃO CRÍTICA!";
-        statusDesc.innerText = "Micro-implosões causam erosão mecânica no rotor!";
-        window.currentCavitationSeverity = 2;
-      }
-    }
-
-    function animatePump2D() {
-      if (!ctxCanvas2D) return;
-      ctxCanvas2D.clearRect(0, 0, canvas2D.width, canvas2D.height);
-
-      const rpm = parseFloat(document.getElementById('cav-rpm')?.value || 1800);
-      const severity = window.currentCavitationSeverity || 0;
-
-      gearAngle2D += (rpm / 1800) * 0.05;
-
-      const cW = canvas2D.width;
-      const cH = canvas2D.height;
-      const pumpX = cW * 0.65;
-      const pumpY = cH * 0.5;
-
-      ctxCanvas2D.fillStyle = 'rgba(255, 255, 255, 0.03)';
-      ctxCanvas2D.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctxCanvas2D.lineWidth = 3;
-
-      ctxCanvas2D.fillRect(0, pumpY - 20, pumpX - 40, 40);
-      ctxCanvas2D.strokeRect(0, pumpY - 20, pumpX - 40, 40);
-
-      ctxCanvas2D.beginPath();
-      ctxCanvas2D.arc(pumpX, pumpY - 25, 38, 0, Math.PI * 2);
-      ctxCanvas2D.arc(pumpX, pumpY + 25, 38, 0, Math.PI * 2);
-      ctxCanvas2D.fillStyle = '#12141c';
-      ctxCanvas2D.fill();
-      ctxCanvas2D.stroke();
-
-      ctxCanvas2D.fillRect(pumpX + 35, pumpY - 15, cW - (pumpX + 35), 30);
-      ctxCanvas2D.strokeRect(pumpX + 35, pumpY - 15, cW - (pumpX + 35), 30);
-
-      particles2D.forEach(p => {
-        p.x += p.speed * (rpm / 1200);
-
-        if (p.x > (pumpX - 110) && p.x < pumpX && severity > 0) p.isBubble = true;
-
-        if (p.x >= pumpX && p.isBubble) {
-          if (severity === 2) {
-            ctxCanvas2D.beginPath();
-            ctxCanvas2D.arc(p.x, p.y, 10, 0, Math.PI * 2);
-            ctxCanvas2D.fillStyle = 'rgba(255, 69, 58, 0.45)';
-            ctxCanvas2D.fill();
-          }
-          p.isBubble = false;
-        }
-
-        if (p.x > cW) {
-          p.x = 0;
-          p.y = (pumpY) + (Math.random() * 26 - 13);
-          p.isBubble = false;
-        }
-
-        ctxCanvas2D.beginPath();
-        if (p.isBubble) {
-          ctxCanvas2D.arc(p.x, p.y, severity === 2 ? 5 : 3.5, 0, Math.PI * 2);
-          ctxCanvas2D.fillStyle = '#ffffff';
-        } else {
-          ctxCanvas2D.arc(p.x, p.y, 3, 0, Math.PI * 2);
-          ctxCanvas2D.fillStyle = '#007aff';
-        }
-        ctxCanvas2D.fill();
-      });
-
-      requestAnimationFrame(animatePump2D);
-    }
-
-    /* ======================================================
-       5. ASSOCIAÇÃO DE BOMBAS
-       ====================================================== */
-    let chartAssocInstance = null;
-    let currentAssocType = 'individual';
-
-    function setAssociation(type) {
-      currentAssocType = type;
-      document.querySelectorAll('.assoc-btn').forEach(btn => btn.classList.remove('border-blue-500', 'bg-blue-500/10'));
-
-      if (type === 'individual') {
-        document.getElementById('btn-assoc-ind').classList.add('border-blue-500', 'bg-blue-500/10');
-        document.getElementById('assoc-explicacao').innerText = "1 Bomba isolada: Vazão Q1 e Pressão P1.";
-      } else if (type === 'serie') {
-        document.getElementById('btn-assoc-serie').classList.add('border-blue-500', 'bg-blue-500/10');
-        document.getElementById('assoc-explicacao').innerText = "Série: Vazão mantida (Q1) e Pressão duplicada (P1 + P2).";
-      } else {
-        document.getElementById('btn-assoc-par').classList.add('border-blue-500', 'bg-blue-500/10');
-        document.getElementById('assoc-explicacao').innerText = "Paralelo: Vazão duplicada (Q1 + Q2) e Pressão mantida (P1).";
-      }
-
-      renderChartAssociacao();
-    }
-
-    function renderChartAssociacao() {
-      const ctx = document.getElementById('chartAssociacao').getContext('2d');
-      if (chartAssocInstance) chartAssocInstance.destroy();
-
-      let labels = [0, 20, 40, 60, 80, 100];
-      let dataP = [];
-
-      if (currentAssocType === 'individual') {
-        dataP = [210, 205, 200, 190, 175, 150];
-      } else if (currentAssocType === 'serie') {
-        dataP = [420, 410, 400, 380, 350, 300];
-      } else {
-        labels = [0, 40, 80, 120, 160, 200];
-        dataP = [210, 205, 200, 190, 175, 150];
-      }
-
-      chartAssocInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Pressão Máxima Resultante (bar)',
-            data: dataP,
-            borderColor: '#007aff',
-            backgroundColor: 'rgba(0, 122, 255, 0.12)',
-            fill: true,
-            tension: 0.35
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { title: { display: true, text: 'Vazão Q (L/min)', color: '#98989d' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#98989d' } },
-            y: { title: { display: true, text: 'Pressão P (bar)', color: '#98989d' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#98989d' } }
-          },
-          plugins: { legend: { labels: { color: '#f5f5f7' } } }
-        }
-      });
-    }
-
-    /* ======================================================
-       6. QUIZ IFF
-       ====================================================== */
-    const quizDados = [
-      {
-        titulo: "Cálculo de Vazão Real",
-        pergunta: "Uma bomba de engrenagens possui cilindrada Vg = 30 cm³/rot e opera acionada por um motor de 1750 RPM. Sabendo que o rendimento volumétrico é de 90%, qual é a vazão real fornecida?",
-        opcoes: ["52.5 L/min", "47.25 L/min", "58.33 L/min", "42.0 L/min"],
-        correta: 1,
-        passos: "1. Vazão Teórica = (30 × 1750) / 1000 = 52.5 L/min.<br>2. Vazão Real = 52.5 × 0.90 = 47.25 L/min."
-      },
-      {
-        titulo: "Diagnóstico de Cavitação",
-        pergunta: "Em um circuito oleodinâmico, identificou-se ruído de estalidos metálicos e vibração na sucção. Qual o diagnóstico correto?",
-        opcoes: ["Óleo superaquecido", "Cavitação decorrente de vácuo excessivo na sucção", "Pressão de trabalho muito baixa", "Vazamento interno"],
-        correta: 1,
-        passos: "O ruído metálico decorre da implosão violenta das bolhas de vapor formadas no vácuo de sucção."
-      },
-      {
-        titulo: "Potência Absorvida",
-        pergunta: "Uma bomba entrega vazão de 50 L/min a 200 bar. Sabendo que ηT = 80%, qual a potência consumida no eixo?",
-        opcoes: ["16.67 kW", "20.83 kW", "25.00 kW", "12.50 kW"],
-        correta: 1,
-        passos: "Potência = (50 × 200) / (600 × 0.80) = 20.83 kW."
-      },
-      {
-        titulo: "Associação de Bombas",
-        pergunta: "Para duplicar a velocidade de um cilindro sem alterar a pressão de trabalho, qual configuração adotar?",
-        opcoes: ["Série", "Paralelo", "Redução do tubo", "Aumento da viscosidade"],
-        correta: 1,
-        passos: "A associação em Paralelo soma as vazões (Qtotal = Q1 + Q2), duplicando a velocidade do atuador."
-      },
-      {
-        titulo: "Seleção Comercial",
-        pergunta: "Qual bomba é indicada para sistemas de alta pressão (>350 bar) com variação de deslocamento?",
-        opcoes: ["Engrenagens Internas", "Palhetas", "Pistões Axiais", "Lóbulos"],
-        correta: 2,
-        passos: "As bombas de pistões axiais oferecem excelente vedação mecânica para alta pressão e regulagem de vazão."
-      }
-    ];
-
-    let quizIndex = 0;
-    let quizScore = 0;
-
-    function carregarQuestao() {
-      const q = quizDados[quizIndex];
-      document.getElementById('quiz-num').innerText = quizIndex + 1;
-      document.getElementById('quiz-titulo').innerText = q.titulo;
-      document.getElementById('quiz-pergunta').innerText = q.pergunta;
-      document.getElementById('quiz-explicacao').classList.add('hidden');
-      document.getElementById('btn-next-quiz').classList.add('hidden');
-
-      const opContainer = document.getElementById('quiz-opcoes');
-      opContainer.innerHTML = '';
-
-      q.opcoes.forEach((op, idx) => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left bg-white/5 hover:bg-white/10 p-3.5 rounded-xl border border-white/10 text-xs text-slate-200 transition font-medium";
-        btn.innerText = `${String.fromCharCode(65 + idx)}) ${op}`;
-        btn.onclick = () => checarResposta(idx);
-        opContainer.appendChild(btn);
-      });
-    }
-
-    function checarResposta(idx) {
-      const q = quizDados[quizIndex];
-      const botoes = document.getElementById('quiz-opcoes').children;
-
-      for (let btn of botoes) btn.disabled = true;
-
-      if (idx === q.correta) {
-        botoes[idx].className = "w-full text-left bg-emerald-500/20 border border-emerald-500 p-3.5 rounded-xl text-xs font-bold text-emerald-300";
-        quizScore += 20;
-        document.getElementById('quiz-score').innerText = quizScore;
-      } else {
-        botoes[idx].className = "w-full text-left bg-rose-500/20 border border-rose-500 p-3.5 rounded-xl text-xs font-bold text-rose-300";
-        botoes[q.correta].className = "w-full text-left bg-emerald-500/20 border border-emerald-500 p-3.5 rounded-xl text-xs font-bold text-emerald-300";
-      }
-
-      document.getElementById('quiz-passos').innerHTML = q.passos;
-      document.getElementById('quiz-explicacao').classList.remove('hidden');
-      document.getElementById('btn-next-quiz').classList.remove('hidden');
-    }
-
-    function proximaQuestao() {
-      quizIndex++;
-      if (quizIndex < quizDados.length) {
-        carregarQuestao();
-      } else {
-        alert(`Quiz Concluído! Pontuação final: ${quizScore} / 100 pontos.`);
-        quizIndex = 0;
-        quizScore = 0;
-        document.getElementById('quiz-score').innerText = 0;
-        carregarQuestao();
-      }
-    }
-
-    // Inicialização ao carregar a página
     window.onload = function() {
-      init3DSimulator();
-      updateCalculator();
-      initCanvas2D();
-      updateCavitation();
-      carregarQuestao();
-      setAssociation('individual');
+      canvas = document.getElementById('mainCanvas');
+      ctx = canvas.getContext('2d');
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      initParticles();
+      switchPump('gear');
+
+      requestAnimationFrame(animate);
     };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    function initParticles() {
+      particles.length = 0;
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          progress: Math.random(),
+          speedOffset: 0.8 + Math.random() * 0.4,
+          side: Math.random() > 0.5 ? 1 : -1, // Direção periférica (Esquerda/Direita)
+          offsetY: (Math.random() - 0.5) * 20
+        });
+      }
+    }
+
+    /* ======================================================
+       TROCA DE BOMBA E MUTAÇÃO DA INTERFACE
+       ====================================================== */
+    function switchPump(type) {
+      activePump = type;
+
+      // Atualizar botões das abas
+      const tabs = ['gear', 'lobe', 'screw', 'vane'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === type) {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+        }
+      });
+
+      // Configurar controles dinâmicos de acordo com a bomba
+      const lblParam = document.getElementById('lbl-param');
+      const sliderParam = document.getElementById('slider-param');
+      const pumpTitle = document.getElementById('pump-title-display');
+      const descMecanismo = document.getElementById('desc-mecanismo');
+
+      if (type === 'gear') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-gear text-blue-400 mr-1"></i> Bomba de Engrenagens Externas`;
+        lblParam.innerText = "Número de Dentes:";
+        sliderParam.min = 6; sliderParam.max = 16; sliderParam.value = 10;
+        descMecanismo.innerText = "O fluido entra pela sucção e é transportado na periferia pelas cavidades dos dentes até a saída. O engrenamento central veda o retorno.";
+      } else if (type === 'lobe') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-circle-nodes text-blue-400 mr-1"></i> Bomba de Lóbulos Sincronizados`;
+        lblParam.innerText = "Número de Lóbulos:";
+        sliderParam.min = 2; sliderParam.max = 4; sliderParam.value = 3;
+        descMecanismo.innerText = "Rotores lobulares giram sem contato físico mecânico. As cavidades amplas formadas transportam fluidos de alta viscosidade com suave bombeamento.";
+      } else if (type === 'screw') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-dna text-blue-400 mr-1"></i> Bomba de Parafusos Helicoidais`;
+        lblParam.innerText = "Passo do Parafuso:";
+        sliderParam.min = 20; sliderParam.max = 50; sliderParam.value = 35;
+        descMecanismo.innerText = "Os parafusos helicoidais em engrenamento contínuo deslocam o fluido axialmente ao longo dos fusos, proporcionando vazão contínua livre de pulsações.";
+      } else if (type === 'vane') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-fan text-blue-400 mr-1"></i> Bomba de Palhetas Deslizantes`;
+        lblParam.innerText = "Excentricidade (mm):";
+        sliderParam.min = 0; sliderParam.max = 35; sliderParam.value = 22;
+        descMecanismo.innerText = "A excentricidade entre rotor e estator faz com que as palhetas variem o volume das câmaras radiais, aspirando e comprimindo o óleo.";
+      }
+
+      updateControls();
+    }
+
+    function togglePlay() {
+      isRunning = !isRunning;
+      document.getElementById('txt-play').innerText = isRunning ? "Pausar Simulação" : "Iniciar Simulação";
+      document.getElementById('icon-play').className = isRunning ? "fa-solid fa-pause" : "fa-solid fa-play";
+      document.getElementById('txt-status').innerText = isRunning ? "Em Operação" : "Pausado";
+      document.getElementById('txt-status').className = isRunning ? "text-emerald-400 font-mono font-bold" : "text-amber-400 font-mono font-bold";
+    }
+
+    function updateControls() {
+      rpm = parseFloat(document.getElementById('slider-rpm').value);
+      customParam = parseFloat(document.getElementById('slider-param').value);
+
+      document.getElementById('val-rpm').innerText = `${rpm} RPM`;
+      document.getElementById('val-param').innerText = customParam;
+
+      // Estimativa teórica de vazão $Q$
+      let vazao = ((rpm / 1200) * (customParam / 10) * 36).toFixed(1);
+      if (activePump === 'vane' && customParam === 0) vazao = "0.0";
+      document.getElementById('calc-vazao').innerText = `${vazao} L/min`;
+    }
+
+    /* ======================================================
+       FUNÇÕES DE DESENHO TÉCNICO DOS COMPONENTES
+       ====================================================== */
+
+    // 1. DESENHO: BOMBA DE ENGRENAGENS
+    function drawGearPump(centerX, centerY) {
+      const r = 65; // Raio base da engrenagem
+      const teeth = customParam;
+      const offset = 58; // Distância entre centros
+
+      // Carcaça externa
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+
+      ctx.beginPath();
+      ctx.arc(centerX - offset, centerY, r + 16, 0.5 * Math.PI, 1.5 * Math.PI);
+      ctx.arc(centerX + offset, centerY, r + 16, 1.5 * Math.PI, 0.5 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Engrenagem Esquerda (Gira no sentido Horário)
+      drawSingleGear(centerX - offset, centerY, r, teeth, angle, '#2563eb');
+
+      // Engrenagem Direita (Gira no sentido Anti-Horário)
+      drawSingleGear(centerX + offset, centerY, r, teeth, -angle + (Math.PI / teeth), '#1d4ed8');
+    }
+
+    function drawSingleGear(cx, cy, radius, teeth, rotation, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+
+      ctx.beginPath();
+      const points = teeth * 4;
+      for (let i = 0; i <= points; i++) {
+        const a = (i / points) * Math.PI * 2;
+        const toothMod = Math.sin(a * teeth);
+        const currentR = radius + (toothMod > 0 ? 12 : -6);
+        const x = Math.cos(a) * currentR;
+        const y = Math.sin(a) * currentR;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Centro do Eixo
+      ctx.beginPath();
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
+      ctx.fillStyle = '#0284c7';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 2. DESENHO: BOMBA DE LÓBULOS
+    function drawLobePump(centerX, centerY) {
+      const offset = 55;
+      const lobes = customParam;
+
+      // Carcaça externa
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(centerX - offset, centerY, 80, 0.45 * Math.PI, 1.55 * Math.PI);
+      ctx.arc(centerX + offset, centerY, 80, 1.45 * Math.PI, 0.55 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Lóbulo Esquerdo
+      drawSingleLobe(centerX - offset, centerY, 50, lobes, angle, '#3b82f6');
+      // Lóbulo Direito
+      drawSingleLobe(centerX + offset, centerY, 50, lobes, -angle + (Math.PI / lobes), '#1d4ed8');
+    }
+
+    function drawSingleLobe(cx, cy, baseR, lobes, rotation, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+
+      ctx.beginPath();
+      const steps = 120;
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / steps) * Math.PI * 2;
+        const r = baseR + 24 * Math.cos(lobes * a);
+        const x = Math.cos(a) * r;
+        const y = Math.sin(a) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#93c5fd';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 12, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 3. DESENHO: BOMBA DE PARAFUSOS
+    function drawScrewPump(centerX, centerY) {
+      const pitch = customParam;
+      const length = 280;
+
+      // Corpo tubular
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.rect(centerX - length/2, centerY - 65, length, 130);
+      ctx.fill();
+      ctx.stroke();
+
+      // Parafuso Superior
+      drawScrewThread(centerX - length/2, centerY - 28, length, pitch, angle, '#3b82f6');
+      // Parafuso Inferior
+      drawScrewThread(centerX - length/2, centerY + 28, length, pitch, -angle, '#1d4ed8');
+    }
+
+    function drawScrewThread(startX, cy, length, pitch, rotAngle, color) {
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#93c5fd';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(startX, cy);
+
+      for (let x = 0; x <= length; x += 4) {
+        const y = Math.sin((x / pitch) * Math.PI * 2 + rotAngle) * 20;
+        ctx.lineTo(startX + x, cy + y);
+      }
+      ctx.lineTo(startX + length, cy + 25);
+      ctx.lineTo(startX, cy + 25);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 4. DESENHO: BOMBA DE PALHETAS
+    function drawVanePump(centerX, centerY) {
+      const camRadius = 115;
+      const rotorRadius = 70;
+      const e = customParam; // Excentricidade
+      const vanes = 8;
+
+      // Anel Estator
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, camRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Rotor Excêntrico
+      const rotorX = centerX - e;
+      ctx.beginPath();
+      ctx.arc(rotorX, centerY, rotorRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Palhetas Deslizantes
+      for (let i = 0; i < vanes; i++) {
+        const vaneAngle = angle + (i * (Math.PI * 2 / vanes));
+        const cosA = Math.cos(vaneAngle);
+        const sinA = Math.sin(vaneAngle);
+
+        const tipDist = -e * cosA + Math.sqrt(camRadius * camRadius - (e * sinA) * (e * sinA));
+
+        const outerX = rotorX + cosA * tipDist;
+        const outerY = centerY + sinA * tipDist;
+
+        ctx.beginPath();
+        ctx.moveTo(rotorX + cosA * 12, centerY + sinA * 12);
+        ctx.lineTo(outerX, outerY);
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+    }
+
+    /* ======================================================
+       SIMULAÇÃO DE FLUXO DE PARTÍCULAS
+       ====================================================== */
+    function renderParticles(centerX, centerY) {
+      const speed = (rpm / 1200) * 0.008;
+
+      particles.forEach(p => {
+        if (isRunning) {
+          p.progress += speed * p.speedOffset;
+          if (p.progress > 1) p.progress = 0;
+        }
+
+        let px, py;
+
+        if (activePump === 'gear' || activePump === 'lobe') {
+          // Trajeto Periférico
+          if (p.progress < 0.2) { // Sucção (Abaixo)
+            px = centerX + p.offsetY;
+            py = (centerY + 160) - (p.progress / 0.2) * 100;
+          } else if (p.progress < 0.8) { // Desvio Periférico ao redor dos rotores
+            const subP = (p.progress - 0.2) / 0.6;
+            const a = Math.PI * 0.5 + p.side * subP * Math.PI;
+            const r = 75;
+            px = (centerX + p.side * 58) + Math.cos(a) * r;
+            py = centerY + Math.sin(a) * r;
+          } else { // Recalque (Acima)
+            px = centerX + p.offsetY;
+            py = (centerY - 60) - ((p.progress - 0.8) / 0.2) * 100;
+          }
+        } else if (activePump === 'screw') {
+          // Trajeto Linear Axial (Esquerda para Direita)
+          px = (centerX - 140) + p.progress * 280;
+          py = centerY + p.offsetY * 1.5;
+        } else if (activePump === 'vane') {
+          // Trajeto Rotacional Excêntrico
+          const a = Math.PI * 0.5 - p.progress * Math.PI * 2;
+          const r = 85 + p.offsetY * 0.5;
+          px = centerX + Math.cos(a) * r;
+          py = centerY + Math.sin(a) * r;
+        }
+
+        // Renderizar ponto de fluido
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.progress < 0.5 ? '#22c55e' : '#ef4444';
+        ctx.fill();
+      });
+    }
+
+    /* ======================================================
+       LOOP PRINCIPAL DE ANIMAÇÃO
+       ====================================================== */
+    function animate() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Incrementar ângulo mecânico
+      if (isRunning) {
+        angle += (rpm / 60) * 0.05;
+        if (angle > Math.PI * 2) angle -= Math.PI * 2;
+      }
+
+      // Renderizar o modelo ativo
+      if (activePump === 'gear') drawGearPump(centerX, centerY);
+      else if (activePump === 'lobe') drawLobePump(centerX, centerY);
+      else if (activePump === 'screw') drawScrewPump(centerX, centerY);
+      else if (activePump === 'vane') drawVanePump(centerX, centerY);
+
+      // Renderizar simulação de fluxo
+      renderParticles(centerX, centerY);
+
+      requestAnimationFrame(animate);
+    }
   </script>
 </body>
 </html>
-
-```
