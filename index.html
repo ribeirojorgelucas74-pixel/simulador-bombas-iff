@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suíte Multisimulador de Bombas Hidráulicas</title>
+  <title>Simulador de Bombas Hidráulicas - IFF</title>
 
-  <!-- Framework Visual Tailwind CSS -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,7 +24,7 @@
     }
   </script>
 
-  <!-- Ícones FontAwesome -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -52,43 +52,42 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-6">
 
-  <!-- CABEÇALHO DA APLICAÇÃO -->
+  <!-- CABEÇALHO -->
   <header class="max-w-7xl w-full mx-auto mb-4 bg-slate-900/90 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
     <div class="flex items-center gap-3">
       <div class="w-11 h-11 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl font-bold">
-        <i class="fa-solid fa-pump-soap"></i>
+        <i class="fa-solid fa-gears"></i>
       </div>
       <div>
-        <h1 class="text-xl font-bold text-white tracking-wide">Suíte de Bombas Hidráulicas</h1>
-        <p class="text-xs text-slate-400">Simulação de Deslocamento Positivo • Engenharia e Automação</p>
+        <h1 class="text-xl font-bold text-white tracking-wide">Simulador de Bombas Hidráulicas</h1>
+        <p class="text-xs text-slate-400">Modelo Didático • Engenharia IFF (Deslocamento Positivo)</p>
       </div>
     </div>
 
-    <!-- NAVEGAÇÃO ENTRE TIPOS DE BOMBAS -->
-    <div class="flex flex-wrap gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800" id="pump-tabs">
+    <!-- TABS DE NAVEGAÇÃO -->
+    <div class="flex flex-wrap gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800" id="pump-tabs">
       <button onclick="switchPump('gear')" id="tab-gear" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow">Engrenagens</button>
-      <button onclick="switchPump('lobe')" id="tab-lobe" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Lóbulos</button>
-      <button onclick="switchPump('screw')" id="tab-screw" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Parafusos</button>
-      <button onclick="switchPump('vane')" id="tab-vane" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas</button>
+      <button onclick="switchPump('vane_unbal')" id="tab-vane_unbal" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas (Não-Bal.)</button>
+      <button onclick="switchPump('vane_bal')" id="tab-vane_bal" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas (Balanceada)</button>
+      <button onclick="switchPump('piston')" id="tab-piston" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Pistões Axiais</button>
     </div>
   </header>
 
   <!-- CORPO PRINCIPAL -->
   <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
 
-    <!-- ÁREA DE VISUALIZAÇÃO (CANVAS) -->
+    <!-- VISUALIZADOR CANVAS -->
     <div class="lg:col-span-8 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between shadow-xl">
       <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
-        <span class="font-semibold text-slate-200" id="pump-title-display"><i class="fa-solid fa-microchip text-blue-400 mr-1"></i> Bomba de Engrenagens Externas</span>
+        <span class="font-semibold text-slate-200" id="pump-title-display"><i class="fa-solid fa-gear text-blue-400 mr-1"></i> Bomba de Engrenagens Externas</span>
         <span id="txt-status" class="text-emerald-400 font-mono font-bold">Em Operação</span>
       </div>
 
-      <!-- CANVAS DINÂMICO -->
       <div class="w-full h-[440px] bg-slate-950 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
-        <canvas id="mainCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+        <canvas id="mainCanvas" class="w-full h-full block"></canvas>
       </div>
 
-      <!-- LEGENDA DE FLUXO DE PRESSÃO -->
+      <!-- LEGENDA -->
       <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-400 text-center">
         <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
           <span class="w-3 h-3 bg-emerald-500 rounded-sm"></span>
@@ -99,37 +98,37 @@
           <span>Recalque (Alta P)</span>
         </div>
         <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
-          <span class="w-3 h-3 bg-blue-500 rounded-sm"></span>
-          <span>Rotores / Elementos</span>
+          <span class="w-3 h-3 bg-amber-400 rounded-full"></span>
+          <span>Vetor Carga Radial</span>
         </div>
         <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
-          <span class="w-3 h-3 bg-amber-400 rounded-full"></span>
+          <span class="w-3 h-3 bg-sky-400 rounded-full"></span>
           <span>Fluido / Partículas</span>
         </div>
       </div>
     </div>
 
-    <!-- PAINEL DE CONTROLE E TELEMETRIA -->
+    <!-- PAINEL DE CONTROLE -->
     <div class="lg:col-span-4 bg-slate-900/80 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between space-y-4 shadow-xl">
       <div>
         <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
-          <span>Controles Operacionais</span>
+          <span>Parâmetros do Sistema</span>
           <i class="fa-solid fa-sliders text-blue-400"></i>
         </h2>
 
-        <!-- Botão Play / Pause -->
+        <!-- Play/Pause -->
         <button id="btn-play" onclick="togglePlay()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 mb-4">
           <i id="icon-play" class="fa-solid fa-pause"></i>
           <span id="txt-play">Pausar Simulação</span>
         </button>
 
-        <!-- Slider Velocidade RPM -->
+        <!-- Slider RPM -->
         <div class="mb-4">
           <div class="flex justify-between text-xs font-semibold mb-1">
-            <label for="slider-rpm" class="text-slate-300">Velocidade do Eixo:</label>
+            <label for="slider-rpm" class="text-slate-300">Velocidade (RPM):</label>
             <span id="val-rpm" class="text-blue-400 font-mono">1200 RPM</span>
           </div>
-          <input type="range" id="slider-rpm" min="0" max="3000" step="100" value="1200" class="w-full cursor-pointer" oninput="updateControls()">
+          <input type="range" id="slider-rpm" min="100" max="3000" step="100" value="1200" class="w-full cursor-pointer" oninput="updateControls()">
         </div>
 
         <!-- Slider Parâmetro Específico -->
@@ -142,26 +141,25 @@
         </div>
       </div>
 
-      <!-- PAINEL EDUCATIVO E TELEMETRIA -->
+      <!-- TELEMETRIA E EXPLICAÇÕES -->
       <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
         <div class="flex justify-between border-b border-slate-800 pb-2">
-          <span class="font-bold text-slate-200">Telemetria Calculada</span>
-          <i class="fa-solid fa-chart-line text-emerald-400"></i>
+          <span class="font-bold text-slate-200">Diagnóstico Mecânico</span>
+          <i class="fa-solid fa-microchip text-emerald-400"></i>
         </div>
         <div class="flex justify-between text-slate-400">
-          <span>Vazão Teórica Estimada (Q):</span>
+          <span>Vazão Teórica (Q):</span>
           <span id="calc-vazao" class="font-mono font-bold text-emerald-400">36.0 L/min</span>
         </div>
         <div class="flex justify-between text-slate-400">
-          <span>Eficiência Volumétrica:</span>
-          <span id="calc-eficiencia" class="font-mono text-slate-200">92%</span>
+          <span>Carga Radial nos Eixos:</span>
+          <span id="calc-carga" class="font-mono text-amber-400 font-bold">Elevada (Não-Balanceada)</span>
         </div>
 
-        <!-- Explicação Didática Dinâmica -->
         <div class="pt-2 border-t border-slate-800/80">
-          <p class="font-semibold text-slate-300 mb-1">Princípio de Funcionamento:</p>
+          <p class="font-semibold text-slate-300 mb-1">Princípio Operacional:</p>
           <p id="desc-mecanismo" class="text-[11px] text-slate-400 leading-relaxed italic">
-            O fluido é conduzido nos espaços entre os dentes das engrenagens e a carcaça periférica. O acoplamento central impede o retorno do óleo.
+            Carregando explicação...
           </p>
         </div>
       </div>
@@ -170,30 +168,22 @@
   </main>
 
   <footer class="max-w-7xl w-full mx-auto mt-4 text-center text-xs text-slate-500">
-    <p>Suíte Didática de Simulação Industrial • Desenvolvida em HTML5 Canvas e JavaScript Puro</p>
+    <p>Simulador Didático de Automação Hidráulica • Instituto Federal Fluminense (IFF)</p>
   </footer>
 
-  <!-- MOTOR DE SIMULAÇÃO E RENDERIZAÇÃO -->
+  <!-- SCRIPT JS -->
   <script>
-    /* ======================================================
-       ESTADO GLOBAL DA APLICAÇÃO
-       ====================================================== */
     let canvas, ctx;
-    let activePump = 'gear'; // 'gear', 'lobe', 'screw', 'vane'
+    let activePump = 'gear';
     let isRunning = true;
     let angle = 0;
 
-    // Parâmetros operacionais
     let rpm = 1200;
-    let customParam = 10; // Dentes (Gear), Lóbulos (Lobe), Passo (Screw), Palhetas (Vane)
+    let customParam = 10;
 
-    // Sistema de partículas
     const particles = [];
-    const numParticles = 80;
+    const numParticles = 70;
 
-    /* ======================================================
-       INICIALIZAÇÃO E CONFIGURAÇÃO
-       ====================================================== */
     window.onload = function() {
       canvas = document.getElementById('mainCanvas');
       ctx = canvas.getContext('2d');
@@ -221,55 +211,61 @@
         particles.push({
           progress: Math.random(),
           speedOffset: 0.8 + Math.random() * 0.4,
-          side: Math.random() > 0.5 ? 1 : -1, // Direção periférica (Esquerda/Direita)
+          side: Math.random() > 0.5 ? 1 : -1,
           offsetY: (Math.random() - 0.5) * 20
         });
       }
     }
 
-    /* ======================================================
-       TROCA DE BOMBA E MUTAÇÃO DA INTERFACE
-       ====================================================== */
     function switchPump(type) {
       activePump = type;
 
-      // Atualizar botões das abas
-      const tabs = ['gear', 'lobe', 'screw', 'vane'];
+      const tabs = ['gear', 'vane_unbal', 'vane_bal', 'piston'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
-        if (t === type) {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow";
-        } else {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+        if (btn) {
+          if (t === type) {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+          }
         }
       });
 
-      // Configurar controles dinâmicos de acordo com a bomba
       const lblParam = document.getElementById('lbl-param');
       const sliderParam = document.getElementById('slider-param');
       const pumpTitle = document.getElementById('pump-title-display');
       const descMecanismo = document.getElementById('desc-mecanismo');
+      const calcCarga = document.getElementById('calc-carga');
 
       if (type === 'gear') {
         pumpTitle.innerHTML = `<i class="fa-solid fa-gear text-blue-400 mr-1"></i> Bomba de Engrenagens Externas`;
         lblParam.innerText = "Número de Dentes:";
         sliderParam.min = 6; sliderParam.max = 16; sliderParam.value = 10;
-        descMecanismo.innerText = "O fluido entra pela sucção e é transportado na periferia pelas cavidades dos dentes até a saída. O engrenamento central veda o retorno.";
-      } else if (type === 'lobe') {
-        pumpTitle.innerHTML = `<i class="fa-solid fa-circle-nodes text-blue-400 mr-1"></i> Bomba de Lóbulos Sincronizados`;
-        lblParam.innerText = "Número de Lóbulos:";
-        sliderParam.min = 2; sliderParam.max = 4; sliderParam.value = 3;
-        descMecanismo.innerText = "Rotores lobulares giram sem contato físico mecânico. As cavidades amplas formadas transportam fluidos de alta viscosidade com suave bombeamento.";
-      } else if (type === 'screw') {
-        pumpTitle.innerHTML = `<i class="fa-solid fa-dna text-blue-400 mr-1"></i> Bomba de Parafusos Helicoidais`;
-        lblParam.innerText = "Passo do Parafuso:";
-        sliderParam.min = 20; sliderParam.max = 50; sliderParam.value = 35;
-        descMecanismo.innerText = "Os parafusos helicoidais em engrenamento contínuo deslocam o fluido axialmente ao longo dos fusos, proporcionando vazão contínua livre de pulsações.";
-      } else if (type === 'vane') {
-        pumpTitle.innerHTML = `<i class="fa-solid fa-fan text-blue-400 mr-1"></i> Bomba de Palhetas Deslizantes`;
+        descMecanismo.innerText = "O fluido é transportado pelas laterais entre os dentes e a carcaça. A alta pressão na saída empurra as engrenagens de volta para a entrada, gerando alta carga radial nos eixos.";
+        calcCarga.innerText = "Elevada (Não-Balanceada)";
+        calcCarga.className = "font-mono text-amber-400 font-bold";
+      } else if (type === 'vane_unbal') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-fan text-blue-400 mr-1"></i> Bomba de Palhetas Não-Balanceada`;
         lblParam.innerText = "Excentricidade (mm):";
-        sliderParam.min = 0; sliderParam.max = 35; sliderParam.value = 22;
-        descMecanismo.innerText = "A excentricidade entre rotor e estator faz com que as palhetas variem o volume das câmaras radiais, aspirando e comprimindo o óleo.";
+        sliderParam.min = 5; sliderParam.max = 35; sliderParam.value = 22;
+        descMecanismo.innerText = "Anel externo circular com rotor excêntrico. Possui apenas uma zona de alta pressão, gerando uma força resultante única que empurra o eixo para o lado de sucção.";
+        calcCarga.innerText = "Alta (Força Unilateral)";
+        calcCarga.className = "font-mono text-rose-400 font-bold";
+      } else if (type === 'vane_bal') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-circle-nodes text-blue-400 mr-1"></i> Bomba de Palhetas Balanceada`;
+        lblParam.innerText = "Número de Palhetas:";
+        sliderParam.min = 6; sliderParam.max = 16; sliderParam.value = 10;
+        descMecanismo.innerText = "Possui carcaça elíptica (oval) e rotor centralizado. Cria duas zonas de alta pressão a 180° de distância. As forças se anulam mutuamente, garantindo Carga Radial Zero!";
+        calcCarga.innerText = "ZERO (Forças Anuladas)";
+        calcCarga.className = "font-mono text-emerald-400 font-bold";
+      } else if (type === 'piston') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-sliders text-blue-400 mr-1"></i> Bomba de Pistões Axiais (Swashplate)`;
+        lblParam.innerText = "Inclinação do Plato (°):";
+        sliderParam.min = 5; sliderParam.max = 30; sliderParam.value = 18;
+        descMecanismo.innerText = "Pistões dispostos axialmente deslizam sobre uma placa inclinada (Swashplate). A rotação faz os pistões aspirarem e expelirem óleo com altíssima eficiência e baixa pulsação.";
+        calcCarga.innerText = "Compensada (Axial)";
+        calcCarga.className = "font-mono text-sky-400 font-bold";
       }
 
       updateControls();
@@ -290,27 +286,22 @@
       document.getElementById('val-rpm').innerText = `${rpm} RPM`;
       document.getElementById('val-param').innerText = customParam;
 
-      // Estimativa teórica de vazão $Q$
       let vazao = ((rpm / 1200) * (customParam / 10) * 36).toFixed(1);
-      if (activePump === 'vane' && customParam === 0) vazao = "0.0";
       document.getElementById('calc-vazao').innerText = `${vazao} L/min`;
     }
 
-    /* ======================================================
-       FUNÇÕES DE DESENHO TÉCNICO DOS COMPONENTES
-       ====================================================== */
+    // --- FUNÇÕES DE DESENHO DA BOMBA ---
 
-    // 1. DESENHO: BOMBA DE ENGRENAGENS
+    // 1. ENGRENAGENS EXTERNAS
     function drawGearPump(centerX, centerY) {
-      const r = 65; // Raio base da engrenagem
+      const r = 65;
       const teeth = customParam;
-      const offset = 58; // Distância entre centros
+      const offset = 58;
 
-      // Carcaça externa
+      // Carcaça
       ctx.fillStyle = '#0f172a';
       ctx.strokeStyle = '#334155';
       ctx.lineWidth = 6;
-
       ctx.beginPath();
       ctx.arc(centerX - offset, centerY, r + 16, 0.5 * Math.PI, 1.5 * Math.PI);
       ctx.arc(centerX + offset, centerY, r + 16, 1.5 * Math.PI, 0.5 * Math.PI);
@@ -318,11 +309,13 @@
       ctx.fill();
       ctx.stroke();
 
-      // Engrenagem Esquerda (Gira no sentido Horário)
+      // Engrenagem Esquerda & Direita
       drawSingleGear(centerX - offset, centerY, r, teeth, angle, '#2563eb');
-
-      // Engrenagem Direita (Gira no sentido Anti-Horário)
       drawSingleGear(centerX + offset, centerY, r, teeth, -angle + (Math.PI / teeth), '#1d4ed8');
+
+      // VETOR DE CARGA RADIAL (Setas indicando empurrão para a entrada)
+      drawArrow(centerX - offset, centerY - 20, centerX - offset, centerY + 35, '#f59e0b', 3, 'Carga Radial');
+      drawArrow(centerX + offset, centerY - 20, centerX + offset, centerY + 35, '#f59e0b', 3, 'Carga Radial');
     }
 
     function drawSingleGear(cx, cy, radius, teeth, rotation, color) {
@@ -348,7 +341,6 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Centro do Eixo
       ctx.beginPath();
       ctx.arc(0, 0, 14, 0, Math.PI * 2);
       ctx.fillStyle = '#0284c7';
@@ -356,104 +348,14 @@
       ctx.restore();
     }
 
-    // 2. DESENHO: BOMBA DE LÓBULOS
-    function drawLobePump(centerX, centerY) {
-      const offset = 55;
-      const lobes = customParam;
-
-      // Carcaça externa
-      ctx.fillStyle = '#0f172a';
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(centerX - offset, centerY, 80, 0.45 * Math.PI, 1.55 * Math.PI);
-      ctx.arc(centerX + offset, centerY, 80, 1.45 * Math.PI, 0.55 * Math.PI);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      // Lóbulo Esquerdo
-      drawSingleLobe(centerX - offset, centerY, 50, lobes, angle, '#3b82f6');
-      // Lóbulo Direito
-      drawSingleLobe(centerX + offset, centerY, 50, lobes, -angle + (Math.PI / lobes), '#1d4ed8');
-    }
-
-    function drawSingleLobe(cx, cy, baseR, lobes, rotation, color) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-
-      ctx.beginPath();
-      const steps = 120;
-      for (let i = 0; i <= steps; i++) {
-        const a = (i / steps) * Math.PI * 2;
-        const r = baseR + 24 * Math.cos(lobes * a);
-        const x = Math.cos(a) * r;
-        const y = Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.strokeStyle = '#93c5fd';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(0, 0, 12, 0, Math.PI * 2);
-      ctx.fillStyle = '#0f172a';
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // 3. DESENHO: BOMBA DE PARAFUSOS
-    function drawScrewPump(centerX, centerY) {
-      const pitch = customParam;
-      const length = 280;
-
-      // Corpo tubular
-      ctx.fillStyle = '#0f172a';
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.rect(centerX - length/2, centerY - 65, length, 130);
-      ctx.fill();
-      ctx.stroke();
-
-      // Parafuso Superior
-      drawScrewThread(centerX - length/2, centerY - 28, length, pitch, angle, '#3b82f6');
-      // Parafuso Inferior
-      drawScrewThread(centerX - length/2, centerY + 28, length, pitch, -angle, '#1d4ed8');
-    }
-
-    function drawScrewThread(startX, cy, length, pitch, rotAngle, color) {
-      ctx.fillStyle = color;
-      ctx.strokeStyle = '#93c5fd';
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      ctx.moveTo(startX, cy);
-
-      for (let x = 0; x <= length; x += 4) {
-        const y = Math.sin((x / pitch) * Math.PI * 2 + rotAngle) * 20;
-        ctx.lineTo(startX + x, cy + y);
-      }
-      ctx.lineTo(startX + length, cy + 25);
-      ctx.lineTo(startX, cy + 25);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    // 4. DESENHO: BOMBA DE PALHETAS
-    function drawVanePump(centerX, centerY) {
+    // 2. PALHETAS NÃO-BALANCEADA
+    function drawVaneUnbalanced(centerX, centerY) {
       const camRadius = 115;
-      const rotorRadius = 70;
-      const e = customParam; // Excentricidade
+      const rotorRadius = 68;
+      const e = customParam;
       const vanes = 8;
 
-      // Anel Estator
+      // Anel Circular
       ctx.beginPath();
       ctx.arc(centerX, centerY, camRadius, 0, Math.PI * 2);
       ctx.fillStyle = '#0f172a';
@@ -472,29 +374,146 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Palhetas Deslizantes
+      // Palhetas
+      for (let i = 0; i < vanes; i++) {
+        const vaneAngle = angle + (i * (Math.PI * 2 / vanes));
+        const cosA = Math.cos(vaneAngle);
+        const sinA = Math.sin(vaneAngle);
+        const tipDist = -e * cosA + Math.sqrt(camRadius * camRadius - (e * sinA) * (e * sinA));
+
+        ctx.beginPath();
+        ctx.moveTo(rotorX + cosA * 12, centerY + sinA * 12);
+        ctx.lineTo(rotorX + cosA * tipDist, centerY + sinA * tipDist);
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+
+      // Vetor de Carga Unilateral
+      drawArrow(rotorX + 50, centerY, rotorX - 45, centerY, '#ef4444', 4, 'Força Unilateral');
+    }
+
+    // 3. PALHETAS BALANCEADA
+    function drawVaneBalanced(centerX, centerY) {
+      const rx = 130; // Raio Maior da Elipse
+      const ry = 95;  // Raio Menor da Elipse
+      const rotorRadius = 65;
+      const vanes = customParam;
+
+      // Anel Elíptico (Oval)
+      ctx.beginPath();
+      ctx.ellipse(centerX, centerY, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Rotor Centralizado
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, rotorRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Palhetas e Câmaras Simétricas
       for (let i = 0; i < vanes; i++) {
         const vaneAngle = angle + (i * (Math.PI * 2 / vanes));
         const cosA = Math.cos(vaneAngle);
         const sinA = Math.sin(vaneAngle);
 
-        const tipDist = -e * cosA + Math.sqrt(camRadius * camRadius - (e * sinA) * (e * sinA));
-
-        const outerX = rotorX + cosA * tipDist;
-        const outerY = centerY + sinA * tipDist;
+        // Distância até o anel elíptico
+        const rElipse = (rx * ry) / Math.sqrt((ry * cosA) ** 2 + (rx * sinA) ** 2);
 
         ctx.beginPath();
-        ctx.moveTo(rotorX + cosA * 12, centerY + sinA * 12);
-        ctx.lineTo(outerX, outerY);
+        ctx.moveTo(centerX + cosA * 12, centerY + sinA * 12);
+        ctx.lineTo(centerX + cosA * rElipse, centerY + sinA * rElipse);
         ctx.strokeStyle = '#f8fafc';
         ctx.lineWidth = 4;
         ctx.stroke();
       }
+
+      // Duas forças opostas que se anulam
+      drawArrow(centerX - 80, centerY, centerX - 15, centerY, '#22c55e', 3, 'F1');
+      drawArrow(centerX + 80, centerY, centerX + 15, centerY, '#22c55e', 3, 'F2 (Canceladas)');
     }
 
-    /* ======================================================
-       SIMULAÇÃO DE FLUXO DE PARTÍCULAS
-       ====================================================== */
+    // 4. BISTÕES AXIAIS (SWASHPLATE)
+    function drawAxialPistonPump(centerX, centerY) {
+      const angleRad = (customParam * Math.PI) / 180;
+      const numPistons = 5;
+
+      // Swashplate (Placa Inclinada)
+      ctx.save();
+      ctx.translate(centerX - 100, centerY);
+      ctx.rotate(-angleRad);
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(-10, -80, 20, 160);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-10, -80, 20, 160);
+      ctx.restore();
+
+      // Bloco de Cilindros Rotativo
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 4;
+      ctx.fillRect(centerX - 40, centerY - 65, 140, 130);
+
+      // Pistões e hastes
+      for (let i = 0; i < numPistons; i++) {
+        const pPhase = angle + (i * (Math.PI * 2 / numPistons));
+        const pY = centerY - 45 + i * 22;
+
+        // Curso do pistão baseado na inclinação do plato
+        const stroke = Math.sin(pPhase) * Math.tan(angleRad) * 45;
+        const headX = centerX - 40 + stroke;
+
+        // Haste até o Swashplate
+        ctx.beginPath();
+        ctx.moveTo(centerX - 100 + (pY - centerY) * Math.sin(angleRad), pY);
+        ctx.lineTo(headX, pY);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Cabeça do Pistão
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(headX, pY - 6, 30, 12);
+      }
+    }
+
+    // DESENHAR SETAS DE FUERZA (VEKTOR)
+    function drawArrow(fromx, fromy, tox, toy, color, width, label) {
+      const headlen = 10;
+      const dx = tox - fromx;
+      const dy = toy - fromy;
+      const headAngle = Math.atan2(dy, dx);
+
+      ctx.beginPath();
+      ctx.moveTo(fromx, fromy);
+      ctx.lineTo(tox, toy);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(tox, toy);
+      ctx.lineTo(tox - headlen * Math.cos(headAngle - Math.PI / 6), toy - headlen * Math.sin(headAngle - Math.PI / 6));
+      ctx.lineTo(tox - headlen * Math.cos(headAngle + Math.PI / 6), toy - headlen * Math.sin(headAngle + Math.PI / 6));
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      if (label) {
+        ctx.font = '10px monospace';
+        ctx.fillStyle = color;
+        ctx.fillText(label, fromx - 15, fromy - 8);
+      }
+    }
+
+    // SIMULACION TI FLUIDO (PARTICULAS)
     function renderParticles(centerX, centerY) {
       const speed = (rpm / 1200) * 0.008;
 
@@ -506,34 +525,32 @@
 
         let px, py;
 
-        if (activePump === 'gear' || activePump === 'lobe') {
-          // Trajeto Periférico
-          if (p.progress < 0.2) { // Sucção (Abaixo)
+        if (activePump === 'gear') {
+          if (p.progress < 0.2) {
             px = centerX + p.offsetY;
             py = (centerY + 160) - (p.progress / 0.2) * 100;
-          } else if (p.progress < 0.8) { // Desvio Periférico ao redor dos rotores
+          } else if (p.progress < 0.8) {
             const subP = (p.progress - 0.2) / 0.6;
             const a = Math.PI * 0.5 + p.side * subP * Math.PI;
-            const r = 75;
-            px = (centerX + p.side * 58) + Math.cos(a) * r;
-            py = centerY + Math.sin(a) * r;
-          } else { // Recalque (Acima)
+            px = (centerX + p.side * 58) + Math.cos(a) * 75;
+            py = centerY + Math.sin(a) * 75;
+          } else {
             px = centerX + p.offsetY;
             py = (centerY - 60) - ((p.progress - 0.8) / 0.2) * 100;
           }
-        } else if (activePump === 'screw') {
-          // Trajeto Linear Axial (Esquerda para Direita)
-          px = (centerX - 140) + p.progress * 280;
-          py = centerY + p.offsetY * 1.5;
-        } else if (activePump === 'vane') {
-          // Trajeto Rotacional Excêntrico
+        } else if (activePump === 'vane_unbal') {
           const a = Math.PI * 0.5 - p.progress * Math.PI * 2;
-          const r = 85 + p.offsetY * 0.5;
-          px = centerX + Math.cos(a) * r;
-          py = centerY + Math.sin(a) * r;
+          px = (centerX - customParam) + Math.cos(a) * (85 + p.offsetY * 0.5);
+          py = centerY + Math.sin(a) * (85 + p.offsetY * 0.5);
+        } else if (activePump === 'vane_bal') {
+          const a = Math.PI * 0.5 - p.progress * Math.PI * 2;
+          px = centerX + Math.cos(a) * (95 + p.offsetY * 0.4);
+          py = centerY + Math.sin(a) * (75 + p.offsetY * 0.4);
+        } else if (activePump === 'piston') {
+          px = (centerX - 130) + p.progress * 240;
+          py = centerY + (p.side * 35) + p.offsetY * 0.5;
         }
 
-        // Renderizar ponto de fluido
         ctx.beginPath();
         ctx.arc(px, py, 3.5, 0, Math.PI * 2);
         ctx.fillStyle = p.progress < 0.5 ? '#22c55e' : '#ef4444';
@@ -541,9 +558,7 @@
       });
     }
 
-    /* ======================================================
-       LOOP PRINCIPAL DE ANIMAÇÃO
-       ====================================================== */
+    // LOOP PRINCIPAL TI ANIMASION
     function animate() {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
@@ -551,19 +566,16 @@
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      // Incrementar ângulo mecânico
       if (isRunning) {
         angle += (rpm / 60) * 0.05;
         if (angle > Math.PI * 2) angle -= Math.PI * 2;
       }
 
-      // Renderizar o modelo ativo
       if (activePump === 'gear') drawGearPump(centerX, centerY);
-      else if (activePump === 'lobe') drawLobePump(centerX, centerY);
-      else if (activePump === 'screw') drawScrewPump(centerX, centerY);
-      else if (activePump === 'vane') drawVanePump(centerX, centerY);
+      else if (activePump === 'vane_unbal') drawVaneUnbalanced(centerX, centerY);
+      else if (activePump === 'vane_bal') drawVaneBalanced(centerX, centerY);
+      else if (activePump === 'piston') drawAxialPistonPump(centerX, centerY);
 
-      // Renderizar simulação de fluxo
       renderParticles(centerX, centerY);
 
       requestAnimationFrame(animate);
