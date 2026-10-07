@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Educacional de Bombas Hidráulicas - IFF</title>
+  
+  <!-- Tailwind CSS para Estilização Rápida -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js para Gráficos Dinâmicos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Ícones FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Estilos personalizados suplementares */
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .active-tab {
+      border-bottom: 3px solid #3b82f6;
+      color: #60a5fa !important;
+      font-weight: bold;
+    }
+    input[type=range] {
+      accent-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- CABEÇALHO DA APLICAÇÃO -->
+  <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 p-2 rounded-lg text-white">
+          <i class="fa-solid fa-gears text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-100">Simulador de Bombas Hidráulicas</h1>
+          <p class="text-xs text-slate-400">Desenvolvido para o Instituto Federal Fluminense (IFF) • Prof. Jorge Lucas</p>
+        </div>
+      </div>
+
+      <!-- NAUVEGAÇÃO POR ABAS -->
+      <nav class="flex gap-2 border-b md:border-b-0 border-slate-800 text-sm overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+        <button onclick="switchTab('classificador')" id="tab-classificador" class="nav-btn active-tab px-3 py-2 text-slate-300 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-shapes"></i> Classificador
+        </button>
+        <button onclick="switchTab('calculadora')" id="tab-calculadora" class="nav-btn px-3 py-2 text-slate-300 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-calculator"></i> Dimensionamento
+        </button>
+        <button onclick="switchTab('cavitacao')" id="tab-cavitacao" class="nav-btn px-3 py-2 text-slate-300 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation"></i> Cavitação
+        </button>
+        <button onclick="switchTab('associacao')" id="tab-associacao" class="nav-btn px-3 py-2 text-slate-300 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-diagram-project"></i> Associação
+        </button>
+        <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-btn px-3 py-2 text-slate-300 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap"></i> Quiz IFF
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÓDULO 1: CLASSIFICADOR DE BOMBAS -->
+    <!-- ---------------------------------------------------- -->
+    <section id="mod-classificador" class="tab-content">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-blue-400 mb-2"><i class="fa-solid fa-shapes mr-2"></i>Classificação das Bombas Hidrostáticas</h2>
+        <p class="text-slate-300">Explore os principais tipos de bombas de deslocamento positivo utilizadas em sistemas oleodinâmicos industriais e móveis.</p>
+      </div>
+
+      <!-- CARDS DAS BOMBAS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <!-- Engrenagens -->
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-blue-500 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white">Engrenagens</h3>
+              <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700">Deslocamento Fixo</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">O fluido é transportado nos vãos dos dentes das engrenagens, da sucção até a descarga.</p>
+            
+            <div class="bg-slate-900 p-3 rounded-lg text-xs space-y-1 mb-4">
+              <p><strong class="text-slate-200">Subtipos:</strong> Engrenagens Externas, Internas, Lóbulos e Gerotor.</p>
+              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 250 bar.</p>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> <strong>Vantagens:</strong> Baixo custo, estrutura robusta, alta tolerância à contaminação e cavitação.</div>
+              <div class="text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> <strong>Desvantagens:</strong> Fluxo levemente pulsante, deslocamento não ajustável.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Palhetas -->
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-blue-500 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white">Palhetas</h3>
+              <span class="bg-purple-900/60 text-purple-300 text-xs px-2.5 py-1 rounded-full border border-purple-700">Fixo / Variável</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Palhetas deslizam nas ranhuras do rotor acionado, mantendo contato com o anel cam do estator.</p>
+            
+            <div class="bg-slate-900 p-3 rounded-lg text-xs space-y-1 mb-4">
+              <p><strong class="text-slate-200">Subtipos:</strong> Deslocamento Fixo ou Variável (Compensada por Pressão), Balanceadas vs Desbalanceadas.</p>
+              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 175-210 bar.</p>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> <strong>Vantagens:</strong> Baixo nível de ruído, fluxo suave, possibilidade de compensação automática de pressão.</div>
+              <div class="text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> <strong>Desvantagens:</strong> Sensível à contaminação por partículas e alta viscosidade.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pistões -->
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-blue-500 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white">Pistões</h3>
+              <span class="bg-amber-900/60 text-amber-300 text-xs px-2.5 py-1 rounded-full border border-amber-700">Alta Pressão</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Movimento alternativo de pistões retificados dentro do bloco de cilindros.</p>
+            
+            <div class="bg-slate-900 p-3 rounded-lg text-xs space-y-1 mb-4">
+              <p><strong class="text-slate-200">Subtipos:</strong> Pistões Axiais (Placa Inclinada / Swashplate) e Radiais.</p>
+              <p><strong class="text-slate-200">Pressão Típica:</strong> Até 350 - 450 bar.</p>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> <strong>Vantagens:</strong> Altíssima eficiência, vazão variável e reversível, resiste a pressões extremas.</div>
+              <div class="text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> <strong>Desvantagens:</strong> Custo elevado, construção mecânica complexa.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABELA COMPARATIVA -->
+      <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 overflow-x-auto">
+        <h3 class="text-lg font-bold text-white mb-4">Resumo Comparativo Técnico</h3>
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900 text-slate-200 uppercase font-semibold">
+            <tr>
+              <th class="p-3">Característica</th>
+              <th class="p-3">Engrenagens Externas</th>
+              <th class="p-3">Palhetas Compensadas</th>
+              <th class="p-3">Pistões Axiais</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700">
+            <tr>
+              <td class="p-3 font-semibold text-white">Pressão Máx. Contínua</td>
+              <td class="p-3">210 - 250 bar</td>
+              <td class="p-3">160 - 210 bar</td>
+              <td class="p-3">350 - 420 bar</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-white">Rendimento Volumétrico ($\eta_v$)</td>
+              <td class="p-3">85% - 92%</td>
+              <td class="p-3">90% - 95%</td>
+              <td class="p-3">95% - 98%</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-white">Nível de Ruído</td>
+              <td class="p-3">Médio / Alto</td>
+              <td class="p-3">Baixo / Silenciosa</td>
+              <td class="p-3">Médio</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-white">Custo Relativo</td>
+              <td class="p-3 text-emerald-400 font-bold">Econômico ($)</td>
+              <td class="p-3 text-amber-400 font-bold">Intermediário ($$)</td>
+              <td class="p-3 text-rose-400 font-bold">Elevado ($$$)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÓDULO 2: CALCULADORA DE DIMENSIONAMENTO -->
+    <!-- ---------------------------------------------------- -->
+    <section id="mod-calculadora" class="tab-content hidden">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-blue-400 mb-2"><i class="fa-solid fa-calculator mr-2"></i>Calculadora de Dimensionamento e Rendimentos</h2>
+        <p class="text-slate-300">Ajuste os parâmetros operacionais da bomba e observe o cálculo instantâneo das potências e eficiências.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- ENTRADAS / SLIDERS (5 COLUNAS) -->
+        <div class="lg:col-span-5 bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-5">
+          <h3 class="text-lg font-bold text-white border-b border-slate-700 pb-2">Parâmetros de Entrada</h3>
+
+          <!-- Rotação n -->
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="input-n" class="text-slate-300">Rotação do Motor ($n$):</label>
+              <span id="val-n" class="text-blue-400">1750 RPM</span>
+            </div>
+            <input type="range" id="input-n" min="800" max="3600" step="50" value="1750" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCalculator()">
+          </div>
+
+          <!-- Cilindrada Vg -->
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="input-vg" class="text-slate-300">Cilindrada / Volume ($V_g$):</label>
+              <span id="val-vg" class="text-blue-400">28.0 cm³/rot</span>
+            </div>
+            <input type="range" id="input-vg" min="2.5" max="100" step="0.5" value="28" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCalculator()">
+          </div>
+
+          <!-- Pressão P -->
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="input-p" class="text-slate-300">Pressão de Trabalho ($P$):</label>
+              <span id="val-p" class="text-blue-400">150 bar</span>
+            </div>
+            <input type="range" id="input-p" min="10" max="300" step="5" value="150" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCalculator()">
+          </div>
+
+          <!-- Rendimento Volumétrico eta_v -->
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="input-etav" class="text-slate-300">Rendimento Volumétrico ($\eta_v$):</label>
+              <span id="val-etav" class="text-blue-400">92 %</span>
+            </div>
+            <input type="range" id="input-etav" min="70" max="99" step="1" value="92" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCalculator()">
+          </div>
+
+          <!-- Rendimento Mecânico-Hidráulico eta_mh -->
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="input-etamh" class="text-slate-300">Rendimento Mecâ.-Hidráulico ($\eta_{m-h}$):</label>
+              <span id="val-etamh" class="text-blue-400">87 %</span>
+            </div>
+            <input type="range" id="input-etamh" min="70" max="98" step="1" value="87" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCalculator()">
+          </div>
+        </div>
+
+        <!-- SAÍDAS / RESULTADOS (7 COLUNAS) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- CARDS DE RESULTADOS -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center">
+              <p class="text-xs text-slate-400">Vazão Real ($Q_{real}$)</p>
+              <p id="res-qreal" class="text-lg font-bold text-emerald-400">0.0 L/min</p>
+              <p id="res-qteorica" class="text-[10px] text-slate-500">Teórica: 0.0 L/min</p>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center">
+              <p class="text-xs text-slate-400">Torque ($M$)</p>
+              <p id="res-torque" class="text-lg font-bold text-amber-400">0.0 N·m</p>
+              <p class="text-[10px] text-slate-500">No Eixo do Motor</p>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center">
+              <p class="text-xs text-slate-400">Potência Absorvida</p>
+              <p id="res-potkw" class="text-lg font-bold text-blue-400">0.0 kW</p>
+              <p id="res-potcv" class="text-[10px] text-slate-300 font-semibold">0.0 CV</p>
+            </div>
+
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center">
+              <p class="text-xs text-slate-400">Rendimento Total ($\eta_T$)</p>
+              <p id="res-etatotal" class="text-lg font-bold text-purple-400">0.0 %</p>
+              <p class="text-[10px] text-slate-500">$\eta_v \cdot \eta_{m-h}$</p>
+            </div>
+
+          </div>
+
+          <!-- PAINEL DE GRÁFICOS -->
+          <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h4 class="text-sm font-bold text-white mb-3">Distribuição de Potência (Útil vs Perdas)</h4>
+            <div class="h-48">
+              <canvas id="chartPotencia"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÓDULO 3: SIMULADOR DE CAVITAÇÃO -->
+    <!-- ---------------------------------------------------- -->
+    <section id="mod-cavitacao" class="tab-content hidden">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-blue-400 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Laboratório de Cavitação e Aeração</h2>
+        <p class="text-slate-300">Simule restrições na linha de sucção e visualize a geração e implosão de bolhas de vapor em tempo real.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- PAINEL DE CONTROLES (4 COLUNAS) -->
+        <div class="lg:col-span-4 bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-4">
+          <h3 class="text-md font-bold text-white border-b border-slate-700 pb-2">Variáveis da Sucção</h3>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="cav-diam" class="text-slate-300">Diâmetro da Tubulação:</label>
+              <span id="val-cav-diam" class="text-blue-400">20 mm</span>
+            </div>
+            <input type="range" id="cav-diam" min="10" max="38" step="1" value="20" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCavitation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="cav-visc" class="text-slate-300">Viscosidade / Temp.:</label>
+              <span id="val-cav-visc" class="text-blue-400">68 cSt (Frio)</span>
+            </div>
+            <input type="range" id="cav-visc" min="15" max="200" step="5" value="68" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCavitation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="cav-rpm" class="text-slate-300">Rotação ($RPM$):</label>
+              <span id="val-cav-rpm" class="text-blue-400">1800 RPM</span>
+            </div>
+            <input type="range" id="cav-rpm" min="900" max="3000" step="100" value="1800" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCavitation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="cav-obstr" class="text-slate-300">Obstrução do Filtro:</label>
+              <span id="val-cav-obstr" class="text-blue-400">30 %</span>
+            </div>
+            <input type="range" id="cav-obstr" min="0" max="95" step="5" value="30" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCavitation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <label for="cav-alt" class="text-slate-300">Altura Sucção ($h$):</label>
+              <span id="val-cav-alt" class="text-blue-400">0.5 m</span>
+            </div>
+            <input type="range" id="cav-alt" min="-0.5" max="2.5" step="0.1" value="0.5" class="w-full h-2 bg-slate-700 rounded-lg cursor-pointer" oninput="updateCavitation()">
+          </div>
+
+        </div>
+
+        <!-- TELA DE ANIMAÇÃO E STATUS (8 COLUNAS) -->
+        <div class="lg:col-span-8 space-y-4">
+          
+          <!-- INDICADOR DE STATUS -->
+          <div id="status-card" class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Status do Sistema</p>
+              <p id="status-text" class="text-xl font-bold text-emerald-400">🟢 Operação Normal</p>
+              <p id="status-desc" class="text-xs text-slate-300 mt-1">Pressão de entrada dentro dos limites recomendados pelo fabricante.</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-400">Vácuo na Entrada</p>
+              <p id="vac-val" class="text-2xl font-mono font-bold text-white">-0.12 bar</p>
+              <p id="vac-mmhg" class="text-xs text-slate-400 font-mono">90 mmHg</p>
+            </div>
+          </div>
+
+          <!-- CANVAS DA ANIMAÇÃO DO FLUIDO -->
+          <div class="bg-slate-900 rounded-xl p-3 border border-slate-700 relative">
+            <div class="flex justify-between text-xs text-slate-400 mb-2">
+              <span><i class="fa-solid fa-arrow-right"></i> Reservatório / Tubo de Sucção</span>
+              <span>Entrada da Bomba / Pressurização <i class="fa-solid fa-bolt text-amber-400"></i></span>
+            </div>
+            
+            <canvas id="canvasCavitacao" class="w-full h-56 bg-slate-950 rounded-lg"></canvas>
+
+            <div class="mt-3 flex items-center justify-around text-xs text-slate-400">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-full inline-block"></span> Óleo Líquido</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 bg-white rounded-full inline-block"></span> Bolhas de Vapor / Vácuo</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 bg-rose-500 rounded-full inline-block"></span> Implosão / Onda de Choque</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÓDULO 4: ASSOCIAÇÃO DE BOMBAS -->
+    <!-- ---------------------------------------------------- -->
+    <section id="mod-associacao" class="tab-content hidden">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-blue-400 mb-2"><i class="fa-solid fa-diagram-project mr-2"></i>Associação de Bombas Hidráulicas</h2>
+        <p class="text-slate-300">Compare o comportamento dinâmico de bombas ligadas individualmente, em Série ou em Paralelo.</p>
+      </div>
+
+      <!-- BOTÕES DE SELEÇÃO DA ASSOCIAÇÃO -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <button onclick="setAssociation('individual')" id="btn-assoc-ind" class="assoc-btn bg-blue-600 text-white p-4 rounded-xl border border-blue-500 text-left transition">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold">1 Bomba Individual</span>
+            <i class="fa-solid fa-circle-dot"></i>
+          </div>
+          <p class="text-xs opacity-80">Operação padrão. Vazão $Q_1$ e Pressão $P_1$.</p>
+        </button>
+
+        <button onclick="setAssociation('serie')" id="btn-assoc-serie" class="assoc-btn bg-slate-800 hover:bg-slate-700 text-slate-300 p-4 rounded-xl border border-slate-700 text-left transition">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold">2 Bombas em Série</span>
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <p class="text-xs opacity-80">$Q_{total} = Q_1$ | $P_{total} = P_1 + P_2$ (Duplica Pressão Máxima)</p>
+        </button>
+
+        <button onclick="setAssociation('paralelo')" id="btn-assoc-par" class="assoc-btn bg-slate-800 hover:bg-slate-700 text-slate-300 p-4 rounded-xl border border-slate-700 text-left transition">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold">2 Bombas em Paralelo</span>
+            <i class="fa-solid fa-code-fork"></i>
+          </div>
+          <p class="text-xs opacity-80">$Q_{total} = Q_1 + Q_2$ | $P_{total} = P_1$ (Duplica Vazão do Sistema)</p>
+        </button>
+      </div>
+
+      <!-- PAINEL COMPARATIVO DE GRÁFICO -->
+      <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <h3 class="text-md font-bold text-white mb-2">Curva Característica Resultante ($Pressão \times Vazão$)</h3>
+        <p id="assoc-explicacao" class="text-xs text-slate-300 mb-4">A curva exibe a relação entre a vazão fornecida e a pressão suportada para a configuração selecionada.</p>
+        
+        <div class="h-72">
+          <canvas id="chartAssociacao"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÓDULO 5: QUIZ E EXERCÍCIOS RESOLVIDOS (IFF) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="mod-quiz" class="tab-content hidden">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-blue-400 mb-2"><i class="fa-solid fa-graduation-cap mr-2"></i>Quiz de Fixação e Exercícios (IFF)</h2>
+        <p class="text-slate-300">Testa os teus conhecimentos com problemas práticos e cálculos típicos aplicados nas avaliações do IFF.</p>
+      </div>
+
+      <div class="max-w-3xl mx-auto bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-6">
+        
+        <!-- HEADER DO QUIZ -->
+        <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+          <div>
+            <span class="text-xs font-semibold text-blue-400 uppercase tracking-wide">Questão <span id="quiz-num">1</span> de 5</span>
+            <h3 id="quiz-titulo" class="text-md font-bold text-white mt-1">Cálculo de Vazão Real</h3>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400">Pontuação:</span>
+            <span id="quiz-score" class="text-lg font-bold text-emerald-400 ml-1">0</span>
+          </div>
+        </div>
+
+        <!-- ENUNCIADO -->
+        <p id="quiz-pergunta" class="text-sm text-slate-200 leading-relaxed">
+          Uma bomba de engrenagens possui cilindrada $V_g = 30\text{ cm}^3/\text{rot}$ e é acionada por um motor elétrico de $1750\text{ RPM}$. Sabendo que o rendimento volumétrico é $\eta_v = 90\%$, qual é a vazão real fornecida ao sistema em L/min?
+        </p>
+
+        <!-- OPÇÕES DE RESPOSTA -->
+        <div id="quiz-opcoes" class="space-y-3">
+          <!-- As opções serão inseridas via JS -->
+        </div>
+
+        <!-- EXPLICAÇÃO PASSO A PASSO -->
+        <div id="quiz-explicacao" class="hidden bg-slate-900 p-4 rounded-lg border border-slate-700 text-xs text-slate-300 space-y-2">
+          <p class="font-bold text-emerald-400"><i class="fa-solid fa-lightbulb mr-1"></i> Resolução Passo a Passo:</p>
+          <p id="quiz-passos"></p>
+        </div>
+
+        <!-- BOTÃO PRÓXIMO -->
+        <div class="flex justify-end pt-2">
+          <button id="btn-next-quiz" onclick="proximaQuestao()" class="hidden bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition">
+            Próxima Questão <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+    <p>Simulador Educacional de Engenharia • Instituto Federal Fluminense (IFF) • 2026</p>
+  </footer>
+
+  <!-- ---------------------------------------------------- -->
+  <!-- SCRIPTS E LÓGICA JAVASCRIPT -->
+  <!-- ---------------------------------------------------- -->
+  <script>
+    /* ======================================================
+       1. NAVEGAÇÃO ENTRE ABAS
+       ====================================================== */
+    function switchTab(tabId) {
+      // Oculta todos os conteúdos
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      
+      // Remove estado ativo de todos os botões
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-tab'));
+      
+      // Exibe a aba selecionada e marca o botão
+      document.getElementById(`mod-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+
+      // Atualiza gráficos se necessário
+      if (tabId === 'calculadora') updateCalculator();
+      if (tabId === 'cavitacao') updateCavitation();
+      if (tabId === 'associacao') renderChartAssociacao();
+    }
+
+    /* ======================================================
+       2. LÓGICA DA CALCULADORA DE DIMENSIONAMENTO
+       ====================================================== */
+    let chartPotenciaInstance = null;
+
+    function updateCalculator() {
+      // Leitura dos sliders
+      const n = parseFloat(document.getElementById('input-n').value);
+      const Vg = parseFloat(document.getElementById('input-vg').value);
+      const P = parseFloat(document.getElementById('input-p').value);
+      const eta_v = parseFloat(document.getElementById('input-etav').value) / 100;
+      const eta_mh = parseFloat(document.getElementById('input-etamh').value) / 100;
+
+      // Atualizar textos na interface
+      document.getElementById('val-n').innerText = `${n} RPM`;
+      document.getElementById('val-vg').innerText = `${Vg.toFixed(1)} cm³/rot`;
+      document.getElementById('val-p').innerText = `${P} bar`;
+      document.getElementById('val-etav').innerText = `${Math.round(eta_v*100)} %`;
+      document.getElementById('val-etamh').innerText = `${Math.round(eta_mh*100)} %`;
+
+      // Cálculos Físico-Matemáticos
+      // 1. Vazão Teórica e Real (L/min)
+      const Q_teorica = (Vg * n) / 1000;
+      const Q_real = Q_teorica * eta_v;
+
+      // 2. Torque no Eixo (N·m) -> M = (Vg * P) / (20 * pi * eta_mh)
+      const Torque = (Vg * P) / (20 * Math.PI * eta_mh);
+
+      // 3. Potência Absorvida / Requerida (kW e CV) -> N = (Q_real * P) / (600 * eta_mh)
+      const Pot_Absorvida_kW = (Q_real * P) / (600 * eta_mh);
+      const Pot_Util_kW = (Q_real * P) / 600; // Potência hidráulica entregue ao fluido
+      const Pot_Absorvida_CV = Pot_Absorvida_kW * 1.35962;
+
+      // 4. Rendimento Total
+      const eta_total = eta_v * eta_mh;
+
+      // Atualização dos cards na tela
+      document.getElementById('res-qreal').innerText = `${Q_real.toFixed(1)} L/min`;
+      document.getElementById('res-qteorica').innerText = `Teórica: ${Q_teorica.toFixed(1)} L/min`;
+      document.getElementById('res-torque').innerText = `${Torque.toFixed(1)} N·m`;
+      document.getElementById('res-potkw').innerText = `${Pot_Absorvida_kW.toFixed(2)} kW`;
+      document.getElementById('res-potcv').innerText = `${Pot_Absorvida_CV.toFixed(2)} CV`;
+      document.getElementById('res-etatotal').innerText = `${(eta_total * 100).toFixed(1)} %`;
+
+      // Atualização do Gráfico Chart.js
+      renderChartPotencia(Pot_Util_kW, Pot_Absorvida_kW - Pot_Util_kW);
+    }
+
+    function renderChartPotencia(potUtil, potPerdas) {
+      const ctx = document.getElementById('chartPotencia').getContext('2d');
+
+      if (chartPotenciaInstance) {
+        chartPotenciaInstance.destroy();
+      }
+
+      chartPotenciaInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Potência Hidráulica'],
+          datasets: [
+            {
+              label: 'Potência Útil (kW)',
+              data: [potUtil],
+              backgroundColor: '#10b981'
+            },
+            {
+              label: 'Perdas / Calor (kW)',
+              data: [potPerdas],
+              backgroundColor: '#f43f5e'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true, grid: { color: '#334155' }, ticks: { color: '#cbd5e1' } },
+            y: { stacked: true, grid: { color: '#334155' }, ticks: { color: '#cbd5e1' }, title: { display: true, text: 'kW', color: '#94a3b8' } }
+          },
+          plugins: {
+            legend: { labels: { color: '#f8fafc' } }
+          }
+        }
+      });
+    }
+
+    /* ======================================================
+       3. LÓGICA DO SIMULADOR DE CAVITAÇÃO E ANIMAÇÃO CANVAS
+       ====================================================== */
+    let canvas, ctxCanvas;
+    let particles = [];
+
+    function initCanvas() {
+      canvas = document.getElementById('canvasCavitacao');
+      if (canvas) {
+        ctxCanvas = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        // Criar partículas iniciais
+        particles = [];
+        for (let i = 0; i < 40; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * (canvas.height - 40) + 20,
+            speed: 2 + Math.random() * 2,
+            isBubble: false
+          });
+        }
+        
+        requestAnimationFrame(animateFluids);
+      }
+    }
+
+    function updateCavitation() {
+      const diam = parseFloat(document.getElementById('cav-diam').value);
+      const visc = parseFloat(document.getElementById('cav-visc').value);
+      const rpm = parseFloat(document.getElementById('cav-rpm').value);
+      const obstr = parseFloat(document.getElementById('cav-obstr').value);
+      const alt = parseFloat(document.getElementById('cav-alt').value);
+
+      document.getElementById('val-cav-diam').innerText = `${diam} mm`;
+      document.getElementById('val-cav-visc').innerText = `${visc} cSt`;
+      document.getElementById('val-cav-rpm').innerText = `${rpm} RPM`;
+      document.getElementById('val-cav-obstr').innerText = `${obstr} %`;
+      document.getElementById('val-cav-alt').innerText = `${alt.toFixed(1)} m`;
+
+      // Cálculo simplificado de perda de carga e vácuo na sucção (bar)
+      // Vácuo aumenta com: menor diâmetro, maior viscosidade, maior RPM, maior obstrução e altura
+      let vacBar = - (0.05 + (30 / diam)*0.08 + (visc / 100)*0.12 + (rpm / 1800)*0.08 + (obstr / 100)*0.45 + (alt * 0.08));
+      if (vacBar < -0.98) vacBar = -0.98; // Limite físico do vácuo absoluto
+
+      const vacmmHg = Math.abs(vacBar * 750.06);
+
+      document.getElementById('vac-val').innerText = `${vacBar.toFixed(2)} bar`;
+      document.getElementById('vac-mmhg').innerText = `${Math.round(vacmmHg)} mmHg`;
+
+      // Diagnóstico de Status
+      const statusCard = document.getElementById('status-card');
+      const statusText = document.getElementById('status-text');
+      const statusDesc = document.getElementById('status-desc');
+
+      if (vacBar > -0.25) {
+        statusText.className = "text-xl font-bold text-emerald-400";
+        statusText.innerText = "🟢 Operação Normal";
+        statusDesc.innerText = "Pressão de sucção perfeita. Sem risco de formação de vapor ou desgaste acelerado.";
+        window.currentCavitationSeverity = 0; // Nenhuma bolha
+      } else if (vacBar <= -0.25 && vacBar > -0.50) {
+        statusText.className = "text-xl font-bold text-amber-400";
+        statusText.innerText = "🟡 Risco de Aeração / Ruído";
+        statusDesc.innerText = "Elevada perda de carga na entrada. Possível aprisionamento de ar e início de instabilidade.";
+        window.currentCavitationSeverity = 1; // Algumas bolhas
+      } else {
+        statusText.className = "text-xl font-bold text-rose-500 animate-pulse";
+        statusText.innerText = "🔴 CAVITAÇÃO CRÍTICA!";
+        statusDesc.innerText = "Pressão caiu abaixo da Pressão de Vapor do óleo. Micro-implosões danificam o metal das engrenagens/pistões!";
+        window.currentCavitationSeverity = 2; // Múltiplas bolhas e implosões
+      }
+    }
+
+    function animateFluids() {
+      if (!ctxCanvas) return;
+      ctxCanvas.clearRect(0, 0, canvas.width, canvas.height);
+
+      const severity = window.currentCavitationSeverity || 0;
+      const midX = canvas.width * 0.65; // Zona de entrada da bomba
+
+      // Desenhar Tubulação
+      ctxCanvas.strokeStyle = '#334155';
+      ctxCanvas.lineWidth = 4;
+      ctxCanvas.strokeRect(10, 20, canvas.width - 20, canvas.height - 40);
+
+      // Animar Partículas de Óleo e Bolhas
+      particles.forEach(p => {
+        p.x += p.speed * (severity === 2 ? 1.8 : 1.0);
+
+        // Se passar da zona crítica e houver cavitação, transforma em bolhas
+        if (p.x > canvas.width * 0.3 && p.x < midX && severity > 0) {
+          p.isBubble = true;
+        }
+
+        // Zona de alta pressão (saída): as bolhas implodem
+        if (p.x >= midX && p.isBubble) {
+          if (severity === 2) {
+            // Efeito visual de implosão (círculo vermelho de choque)
+            ctxCanvas.beginPath();
+            ctxCanvas.arc(p.x, p.y, 12, 0, Math.PI * 2);
+            ctxCanvas.fillStyle = 'rgba(244, 63, 94, 0.4)';
+            ctxCanvas.fill();
+          }
+          p.isBubble = false;
+        }
+
+        // Reiniciar partícula no início do tubo
+        if (p.x > canvas.width - 20) {
+          p.x = 20;
+          p.y = Math.random() * (canvas.height - 60) + 30;
+          p.isBubble = false;
+        }
+
+        // Desenhar a partícula/bolha
+        ctxCanvas.beginPath();
+        if (p.isBubble) {
+          ctxCanvas.arc(p.x, p.y, severity === 2 ? 6 : 4, 0, Math.PI * 2);
+          ctxCanvas.fillStyle = '#ffffff'; // Bolha branca de vapor
+        } else {
+          ctxCanvas.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctxCanvas.fillStyle = '#3b82f6'; // Óleo azul
+        }
+        ctxCanvas.fill();
+      });
+
+      requestAnimationFrame(animateFluids);
+    }
+
+    /* ======================================================
+       4. LÓGICA DE ASSOCIAÇÃO DE BOMBAS
+       ====================================================== */
+    let chartAssocInstance = null;
+    let currentAssocType = 'individual';
+
+    function setAssociation(type) {
+      currentAssocType = type;
+
+      document.querySelectorAll('.assoc-btn').forEach(btn => {
+        btn.className = "assoc-btn bg-slate-800 hover:bg-slate-700 text-slate-300 p-4 rounded-xl border border-slate-700 text-left transition";
+      });
+
+      if (type === 'individual') {
+        document.getElementById('btn-assoc-ind').className = "assoc-btn bg-blue-600 text-white p-4 rounded-xl border border-blue-500 text-left transition";
+        document.getElementById('assoc-explicacao').innerText = "1 Bomba operando isoladamente com Vazão Q1 e Pressão P1.";
+      } else if (type === 'serie') {
+        document.getElementById('btn-assoc-serie').className = "assoc-btn bg-blue-600 text-white p-4 rounded-xl border border-blue-500 text-left transition";
+        document.getElementById('assoc-explicacao').innerText = "Associação em Série: A saída da Bomba 1 entra na sucção da Bomba 2. A vazão mantêm-se (Q1), mas a pressão total duplica (P1 + P2).";
+      } else {
+        document.getElementById('btn-assoc-par').className = "assoc-btn bg-blue-600 text-white p-4 rounded-xl border border-blue-500 text-left transition";
+        document.getElementById('assoc-explicacao').innerText = "Associação em Paralelo: As saídas das bombas juntam-se na mesma linha. A vazão total é duplicada (Q1 + Q2), mantendo a mesma pressão máxima P1.";
+      }
+
+      renderChartAssociacao();
+    }
+
+    function renderChartAssociacao() {
+      const ctx = document.getElementById('chartAssociacao').getContext('2d');
+      if (chartAssocInstance) chartAssocInstance.destroy();
+
+      let labels = [0, 20, 40, 60, 80, 100]; // Vazão (L/min)
+      let dataP = [];
+
+      if (currentAssocType === 'individual') {
+        dataP = [210, 205, 200, 190, 175, 150];
+      } else if (currentAssocType === 'serie') {
+        dataP = [420, 410, 400, 380, 350, 300]; // Pressão duplicada
+      } else {
+        labels = [0, 40, 80, 120, 160, 200]; // Vazão duplicada
+        dataP = [210, 205, 200, 190, 175, 150];
+      }
+
+      chartAssocInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Pressão Resultante (bar)',
+            data: dataP,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { title: { display: true, text: 'Vazão Total Q (L/min)', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#cbd5e1' } },
+            y: { title: { display: true, text: 'Pressão Máx P (bar)', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#cbd5e1' } }
+          },
+          plugins: { legend: { labels: { color: '#f8fafc' } } }
+        }
+      });
+    }
+
+    /* ======================================================
+       5. LÓGICA DO QUIZ IFF
+       ====================================================== */
+    const quizDados = [
+      {
+        titulo: "Cálculo de Vazão Real",
+        pergunta: "Uma bomba de engrenagens possui cilindrada Vg = 30 cm³/rot e opera acionada por um motor de 1750 RPM. Sabendo que o rendimento volumétrico é de 90%, qual é a vazão real fornecida?",
+        opcoes: ["52.5 L/min", "47.25 L/min", "58.33 L/min", "42.0 L/min"],
+        correta: 1,
+        passos: "1. Vazão Teórica = (Vg × n) / 1000 = (30 × 1750) / 1000 = 52.5 L/min.<br>2. Vazão Real = Vazão Teórica × ηv = 52.5 × 0.90 = 47.25 L/min."
+      },
+      {
+        titulo: "Diagnóstico de Cavitação",
+        pergunta: "Durante uma inspeção técnica num sistema hidráulico industrial no IFF, observou-se ruído excessivo metálico (como pedras na tubulação) e forte vibração na entrada da bomba. Qual é a causa raiz provável?",
+        opcoes: ["Superaquecimento do óleo", "Cavitação por vácuo excessivo na sucção", "Pressão de trabalho muito baixa", "Vazamento interno nos pistões"],
+        correta: 1,
+        passos: "O ruído característico de 'martelamento' ou pedras estourando decorre da implosão rápida de bolhas de vapor ao saírem da zona de vácuo para a alta pressão."
+      },
+      {
+        titulo: "Potência Absorvida",
+        pergunta: "Uma bomba fornece uma vazão de 50 L/min sob uma pressão de 200 bar. Sabendo que o rendimento total é de 80%, qual a potência consumida pelo motor elétrico?",
+        opcoes: ["16.67 kW", "20.83 kW", "25.00 kW", "12.50 kW"],
+        correta: 1,
+        passos: "Potência = (Q × P) / (600 × ηT) = (50 × 200) / (600 × 0.80) = 10000 / 480 = 20.83 kW."
+      },
+      {
+        titulo: "Associação de Bombas",
+        pergunta: "Um circuito exige aumentar a velocidade de avanço de um atuador hidráulico sem alterar a pressão máxima de trabalho. Qual associação de bombas deve ser aplicada?",
+        opcoes: ["Duas bombas em Série", "Duas bombas em Paralelo", "Substituição por bomba de menor cilindrada", "Redução da rotação do motor"],
+        correta: 1,
+        passos: "A associação em Paralelo soma as vazões das bombas (Qtotal = Q1 + Q2), aumentando a velocidade de deslocamento dos atuadores."
+      },
+      {
+        titulo: "Seleção Comercial",
+        pergunta: "Qual o principal tipo de bomba escolhido em sistemas móveis e industriais que requerem pressões de trabalho superiores a 350 bar com vazão variável?",
+        opcoes: ["Bomba de Engrenagens Internas", "Bomba de Palhetas Desbalanceadas", "Bomba de Pistões Axiais com Placa Inclinada", "Bomba de Lóbulos"],
+        correta: 2,
+        passos: "As bombas de pistões axiais oferecem a maior resistência mecânica para pressões extremas (>350 bar) e possuem reguladores variadores de cilindrada."
+      }
+    ];
+
+    let quizIndex = 0;
+    let quizScore = 0;
+
+    function carregarQuestao() {
+      const q = quizDados[quizIndex];
+      document.getElementById('quiz-num').innerText = quizIndex + 1;
+      document.getElementById('quiz-titulo').innerText = q.titulo;
+      document.getElementById('quiz-pergunta').innerText = q.pergunta;
+      document.getElementById('quiz-explicacao').classList.add('hidden');
+      document.getElementById('btn-next-quiz').classList.add('hidden');
+
+      const opContainer = document.getElementById('quiz-opcoes');
+      opContainer.innerHTML = '';
+
+      q.opcoes.forEach((op, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left bg-slate-900 hover:bg-slate-700 p-3 rounded-lg border border-slate-700 text-xs text-slate-200 transition";
+        btn.innerText = `${String.fromCharCode(65 + idx)}) ${op}`;
+        btn.onclick = () => checarResposta(idx);
+        opContainer.appendChild(btn);
+      });
+    }
+
+    function checarResposta(idx) {
+      const q = quizDados[quizIndex];
+      const botoes = document.getElementById('quiz-opcoes').children;
+
+      // Desabilitar todos os botões da questão
+      for (let btn of botoes) btn.disabled = true;
+
+      if (idx === q.correta) {
+        botoes[idx].className = "w-full text-left bg-emerald-900/60 border border-emerald-500 p-3 rounded-lg text-xs font-bold text-emerald-300";
+        quizScore += 20;
+        document.getElementById('quiz-score').innerText = quizScore;
+      } else {
+        botoes[idx].className = "w-full text-left bg-rose-900/60 border border-rose-500 p-3 rounded-lg text-xs font-bold text-rose-300";
+        botoes[q.correta].className = "w-full text-left bg-emerald-900/60 border border-emerald-500 p-3 rounded-lg text-xs font-bold text-emerald-300";
+      }
+
+      document.getElementById('quiz-passos').innerHTML = q.passos;
+      document.getElementById('quiz-explicacao').classList.remove('hidden');
+      document.getElementById('btn-next-quiz').classList.remove('hidden');
+    }
+
+    function proximaQuestao() {
+      quizIndex++;
+      if (quizIndex < quizDados.length) {
+        carregarQuestao();
+      } else {
+        alert(`Quiz Concluído! Tua pontuação final foi: ${quizScore} / 100 pontos.`);
+        quizIndex = 0;
+        quizScore = 0;
+        document.getElementById('quiz-score').innerText = 0;
+        carregarQuestao();
+      }
+    }
+
+    // Inicializações ao carregar a página
+    window.onload = function() {
+      updateCalculator();
+      initCanvas();
+      updateCavitation();
+      carregarQuestao();
+    };
+  </script>
+</body>
+</html>
