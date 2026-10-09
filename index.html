@@ -1,805 +1,585 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Avançado de Fluidodinâmica - Escoamento em Tubulações</title>
-    <!-- Chart.js CDN para gráficos em tempo real -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --bg-dark: #0f172a;
-            --panel-bg: #1e293b;
-            --card-bg: #334155;
-            --accent-blue: #38bdf8;
-            --accent-amber: #fbbf24;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --border-color: #475569;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Bombas Hidráulicas - IFF</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bgDark: '#080c14',
+            cardDark: '#0f172a',
+            accentBlue: '#3b82f6',
+            suctionGreen: '#22c55e',
+            dischargeRed: '#ef4444'
+          }
         }
+      }
+    }
+  </script>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 1300px;
-        }
-
-        header h1 {
-            font-size: 28px;
-            color: var(--accent-green);
-            letter-spacing: 0.5px;
-        }
-
-        header p {
-            color: var(--text-sub);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1300px;
-        }
-
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* PAINEL DE CONTROLES */
-        .control-panel {
-            background-color: var(--panel-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            border: 1px solid var(--border-color);
-        }
-
-        .section-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            color: var(--accent-green);
-            font-weight: 700;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-        }
-
-        .btn-group-mode, .btn-group-fluid {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-        }
-
-        button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: all 0.2s ease-in-out;
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        button:hover {
-            filter: brightness(1.2);
-        }
-
-        button.active-water {
-            background-color: #0284c7;
-            color: white;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-        }
-
-        button.active-oil {
-            background-color: #d97706;
-            color: white;
-            border-color: var(--accent-amber);
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-        }
-
-        button.active-mode {
-            background-color: #16a34a;
-            color: white;
-            border-color: var(--accent-green);
-        }
-
-        .slider-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-sub);
-        }
-
-        .slider-header span.val {
-            color: var(--text-main);
-            font-weight: bold;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent-green);
-            cursor: pointer;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: var(--text-sub);
-        }
-
-        /* ÁREA DE SIMULAÇÃO E GRÁFICOS */
-        .simulation-area {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .canvas-container {
-            background-color: #020617;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-        }
-
-        /* CARDS TELEMÉTRICOS */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .card {
-            background-color: var(--panel-bg);
-            padding: 14px;
-            border-radius: 8px;
-            border-left: 4px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .card.visc { border-left-color: var(--accent-amber); }
-        .card.flow { border-left-color: var(--accent-blue); }
-        .card.reynolds { border-left-color: var(--accent-green); }
-        .card.tau { border-left-color: #c084fc; }
-
-        .card h4 {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--text-sub);
-            margin-bottom: 4px;
-        }
-
-        .card .value {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-main);
-        }
-
-        .card .unit {
-            font-size: 11px;
-            color: var(--text-sub);
-            margin-top: 2px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            margin-top: 4px;
-            text-transform: uppercase;
-        }
-
-        .badge-laminar { background-color: rgba(74, 222, 128, 0.2); color: var(--accent-green); }
-        .badge-trans { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-amber); }
-        .badge-turb { background-color: rgba(248, 113, 113, 0.2); color: var(--accent-red); }
-
-        /* SEÇÃO DE FÓRMULAS E GRÁFICOS ABAIXO */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .analytics-card {
-            background-color: var(--panel-bg);
-            border-radius: 12px;
-            padding: 18px;
-            border: 1px solid var(--border-color);
-        }
-
-        .analytics-card h3 {
-            font-size: 14px;
-            color: var(--accent-green);
-            margin-bottom: 12px;
-        }
-
-        .formula-box {
-            background-color: var(--card-bg);
-            padding: 12px;
-            border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #e2e8f0;
-            overflow-x: auto;
-        }
-
-        .formula-highlight {
-            color: var(--accent-blue);
-            font-weight: bold;
-        }
-    </style>
+  <style>
+    body {
+      background-color: #080c14;
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 6px;
+      height: 6px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-6">
 
-    <header>
-        <h1>Laboratório Virtual de Fluidodinâmica</h1>
-        <p>Simulador interativo de escoamento em tubulações industriais (Lei de Hagen-Poiseuille & Número de Reynolds)</p>
-    </header>
-
-    <div class="main-layout">
-        <!-- PAINEL LATERAL DE CONTROLES -->
-        <aside class="control-panel">
-            <div class="section-title">Modo de Visualização</div>
-            <div class="btn-group-mode">
-                <button id="btnSingleMode" class="active-mode" onclick="setMode('single')">Fluido Único</button>
-                <button id="btnCompareMode" onclick="setMode('compare')">Comparativo (A vs B)</button>
-            </div>
-
-            <div class="section-title">Seleção do Fluido</div>
-            <div class="btn-group-fluid">
-                <button id="btnWater" class="active-water" onclick="setFluid('water')">Água (20°C)</button>
-                <button id="btnOil" onclick="setFluid('oil')">Óleo ISO VG 46</button>
-            </div>
-
-            <div class="section-title">Parâmetros Operacionais</div>
-            
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span>Pressão da Bomba (&Delta;P):</span>
-                    <span id="lblPressure" class="val">50.0 kPa</span>
-                </div>
-                <input type="range" id="sliderPressure" min="10" max="200" value="50" step="5" oninput="onParamChange()">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span>Diâmetro do Tubo (D):</span>
-                    <span id="lblDiameter" class="val">50.0 mm</span>
-                </div>
-                <input type="range" id="sliderDiameter" min="20" max="100" value="50" step="2" oninput="onParamChange()">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span>Comprimento do Tubo (L):</span>
-                    <span id="lblLength" class="val">2.0 m</span>
-                </div>
-                <input type="range" id="sliderLength" min="0.5" max="5.0" value="2.0" step="0.5" oninput="onParamChange()">
-            </div>
-
-            <div class="section-title">Camadas Visuais</div>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="chkVectors" checked onchange="draw()"> Vetores de Velocidade v(r)</label>
-                <label><input type="checkbox" id="chkParabola" checked onchange="draw()"> Perfil Parabólico Teórico</label>
-                <label><input type="checkbox" id="chkParticles" checked onchange="draw()"> Partículas do Marcador</label>
-            </div>
-        </aside>
-
-        <!-- ÁREA PRINCIPAL: SIMULAÇÃO + TELEMETRIA + ANALÍTICO -->
-        <main class="simulation-area">
-            
-            <!-- CANVAS DE SIMULAÇÃO -->
-            <div class="canvas-container">
-                <canvas id="simCanvas" width="900" height="380"></canvas>
-            </div>
-
-            <!-- CARDS DE TELEMETRIA -->
-            <div class="telemetry-grid">
-                <div class="card visc">
-                    <h4>Viscosidade Dinâmica (&mu;)</h4>
-                    <div id="valVisc" class="value">1.00 mPa·s</div>
-                    <div id="descVisc" class="unit">Fluido de Baixa Viscosidade</div>
-                </div>
-
-                <div class="card flow">
-                    <h4>Vazão Volumétrica (Q)</h4>
-                    <div id="valFlow" class="value">0.00 L/min</div>
-                    <div id="valVel" class="unit">Velocidade Média: 0.00 m/s</div>
-                </div>
-
-                <div class="card reynolds">
-                    <h4>Número de Reynolds (Re)</h4>
-                    <div id="valReynolds" class="value">0</div>
-                    <div id="badgeRegime" class="badge badge-laminar">Escoamento Laminar</div>
-                </div>
-
-                <div class="card tau">
-                    <h4>Tensão na Parede (&tau;<sub>w</sub>)</h4>
-                    <div id="valTau" class="value">0.00 Pa</div>
-                    <div class="unit">Cisalhamento no Contorno</div>
-                </div>
-            </div>
-
-            <!-- ANALÍTICO: FÓRMULAS E GRÁFICO -->
-            <div class="analytics-grid">
-                <!-- PAINEL DE FÓRMULAS INTERATIVAS -->
-                <div class="analytics-card">
-                    <h3>Cálculo Físico em Tempo Real</h3>
-                    <div class="formula-box">
-                        <strong>Lei de Hagen-Poiseuille:</strong><br>
-                        Q = (&pi; &middot; &Delta;P &middot; R<sup>4</sup>) / (8 &middot; &mu; &middot; L)<br><br>
-                        <strong>Substituição de Valores:</strong><br>
-                        <span id="formulaCalc">
-                            Q = (&pi; &times; 50000 &times; 0.025<sup>4</sup>) / (8 &times; 0.001 &times; 2.0)<br>
-                            Q = 0.00767 m³/s = 460.3 L/min
-                        </span>
-                    </div>
-                </div>
-
-                <!-- GRÁFICO DE PERFIL DE VELOCIDADE -->
-                <div class="analytics-card">
-                    <h3>Perfil Transversal de Velocidade v(r)</h3>
-                    <div style="position: relative; height: 160px;">
-                        <canvas id="chartProfile"></canvas>
-                    </div>
-                </div>
-            </div>
-
-        </main>
+  <!-- CABEÇALHO -->
+  <header class="max-w-7xl w-full mx-auto mb-4 bg-slate-900/90 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl font-bold">
+        <i class="fa-solid fa-gears"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-white tracking-wide">Simulador de Bombas Hidráulicas</h1>
+        <p class="text-xs text-slate-400">Modelo Didático • Engenharia IFF (Deslocamento Positivo)</p>
+      </div>
     </div>
 
-    <script>
-        // --- PROPRIEDADES FÍSICAS REAIS ---
-        const FLUIDS = {
-            water: {
-                name: "Água (20°C)",
-                viscosity: 1.002e-3, // Pa·s (1.002 mPa·s)
-                density: 998.2,      // kg/m³
-                color: "#38bdf8",
-                particleColor: "rgba(56, 189, 248, 0.8)"
-            },
-            oil: {
-                name: "Óleo ISO VG 46",
-                viscosity: 46.0e-3,  // Pa·s (46.0 mPa·s a 40°C)
-                density: 875.0,      // kg/m³
-                color: "#fbbf24",
-                particleColor: "rgba(251, 191, 36, 0.8)"
-            }
-        };
+    <!-- TABS DE NAVEGAÇÃO -->
+    <div class="flex flex-wrap gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800" id="pump-tabs">
+      <button onclick="switchPump('gear')" id="tab-gear" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow">Engrenagens</button>
+      <button onclick="switchPump('vane_unbal')" id="tab-vane_unbal" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas (Não-Bal.)</button>
+      <button onclick="switchPump('vane_bal')" id="tab-vane_bal" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Palhetas (Balanceada)</button>
+      <button onclick="switchPump('piston')" id="tab-piston" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Pistões Axiais</button>
+    </div>
+  </header>
 
-        // --- ESTADO GLOBAL DA APLICAÇÃO ---
-        let currentMode = 'single'; // 'single' ou 'compare'
-        let currentFluidKey = 'water';
-        let particles = [];
-        let profileChart = null;
+  <!-- CORPO PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
 
-        // Elementos DOM
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
+    <!-- VISUALIZADOR CANVAS -->
+    <div class="lg:col-span-8 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between shadow-xl">
+      <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
+        <span class="font-semibold text-slate-200" id="pump-title-display"><i class="fa-solid fa-gear text-blue-400 mr-1"></i> Bomba de Engrenagens Externas</span>
+        <span id="txt-status" class="text-emerald-400 font-mono font-bold">Em Operação</span>
+      </div>
 
-        // Inicialização dos Gráficos com Chart.js
-        function initChart() {
-            const ctxChart = document.getElementById('chartProfile').getContext('2d');
-            profileChart = new Chart(ctxChart, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Velocidade v(r) [m/s]',
-                        data: [],
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Posição no Raio r [mm]', color: '#94a3b8', font: { size: 10 } },
-                            ticks: { color: '#94a3b8', font: { size: 9 } },
-                            grid: { color: 'rgba(255,255,255,0.05)' }
-                        },
-                        y: {
-                            title: { display: true, text: 'Velocidade [m/s]', color: '#94a3b8', font: { size: 10 } },
-                            ticks: { color: '#94a3b8', font: { size: 9 } },
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
+      <div class="w-full h-[440px] bg-slate-950 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+        <canvas id="mainCanvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- LEGENDA -->
+      <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-400 text-center">
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-emerald-500 rounded-sm"></span>
+          <span>Sucção (Baixa P)</span>
+        </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-rose-500 rounded-sm"></span>
+          <span>Recalque (Alta P)</span>
+        </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-amber-400 rounded-full"></span>
+          <span>Vetor Carga Radial</span>
+        </div>
+        <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-center gap-2">
+          <span class="w-3 h-3 bg-sky-400 rounded-full"></span>
+          <span>Fluido / Partículas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL DE CONTROLE -->
+    <div class="lg:col-span-4 bg-slate-900/80 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between space-y-4 shadow-xl">
+      <div>
+        <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
+          <span>Parâmetros do Sistema</span>
+          <i class="fa-solid fa-sliders text-blue-400"></i>
+        </h2>
+
+        <!-- Play/Pause -->
+        <button id="btn-play" onclick="togglePlay()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 mb-4">
+          <i id="icon-play" class="fa-solid fa-pause"></i>
+          <span id="txt-play">Pausar Simulação</span>
+        </button>
+
+        <!-- Slider RPM -->
+        <div class="mb-4">
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <label for="slider-rpm" class="text-slate-300">Velocidade (RPM):</label>
+            <span id="val-rpm" class="text-blue-400 font-mono">1200 RPM</span>
+          </div>
+          <input type="range" id="slider-rpm" min="100" max="3000" step="100" value="1200" class="w-full cursor-pointer" oninput="updateControls()">
+        </div>
+
+        <!-- Slider Parâmetro Específico -->
+        <div class="mb-4">
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <label id="lbl-param" for="slider-param" class="text-slate-300">Número de Dentes:</label>
+            <span id="val-param" class="text-blue-400 font-mono">10</span>
+          </div>
+          <input type="range" id="slider-param" min="6" max="16" step="1" value="10" class="w-full cursor-pointer" oninput="updateControls()">
+        </div>
+      </div>
+
+      <!-- TELEMETRIA E EXPLICAÇÕES -->
+      <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+        <div class="flex justify-between border-b border-slate-800 pb-2">
+          <span class="font-bold text-slate-200">Diagnóstico Mecânico</span>
+          <i class="fa-solid fa-microchip text-emerald-400"></i>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Vazão Teórica (Q):</span>
+          <span id="calc-vazao" class="font-mono font-bold text-emerald-400">36.0 L/min</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Carga Radial nos Eixos:</span>
+          <span id="calc-carga" class="font-mono text-amber-400 font-bold">Elevada (Não-Balanceada)</span>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800/80">
+          <p class="font-semibold text-slate-300 mb-1">Princípio Operacional:</p>
+          <p id="desc-mecanismo" class="text-[11px] text-slate-400 leading-relaxed italic">
+            Carregando explicação...
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="max-w-7xl w-full mx-auto mt-4 text-center text-xs text-slate-500">
+    <p>Simulador Didático de Automação Hidráulica • Instituto Federal Fluminense (IFF)</p>
+  </footer>
+
+  <!-- SCRIPT JS -->
+  <script>
+    let canvas, ctx;
+    let activePump = 'gear';
+    let isRunning = true;
+    let angle = 0;
+
+    let rpm = 1200;
+    let customParam = 10;
+
+    const particles = [];
+    const numParticles = 70;
+
+    window.onload = function() {
+      canvas = document.getElementById('mainCanvas');
+      ctx = canvas.getContext('2d');
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      initParticles();
+      switchPump('gear');
+
+      requestAnimationFrame(animate);
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    function initParticles() {
+      particles.length = 0;
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          progress: Math.random(),
+          speedOffset: 0.8 + Math.random() * 0.4,
+          side: Math.random() > 0.5 ? 1 : -1,
+          offsetY: (Math.random() - 0.5) * 20
+        });
+      }
+    }
+
+    function switchPump(type) {
+      activePump = type;
+
+      const tabs = ['gear', 'vane_unbal', 'vane_bal', 'piston'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white shadow";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+          }
+        }
+      });
+
+      const lblParam = document.getElementById('lbl-param');
+      const sliderParam = document.getElementById('slider-param');
+      const pumpTitle = document.getElementById('pump-title-display');
+      const descMecanismo = document.getElementById('desc-mecanismo');
+      const calcCarga = document.getElementById('calc-carga');
+
+      if (type === 'gear') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-gear text-blue-400 mr-1"></i> Bomba de Engrenagens Externas`;
+        lblParam.innerText = "Número de Dentes:";
+        sliderParam.min = 6; sliderParam.max = 16; sliderParam.value = 10;
+        descMecanismo.innerText = "O fluido é transportado pelas laterais entre os dentes e a carcaça. A alta pressão na saída empurra as engrenagens de volta para a entrada, gerando alta carga radial nos eixos.";
+        calcCarga.innerText = "Elevada (Não-Balanceada)";
+        calcCarga.className = "font-mono text-amber-400 font-bold";
+      } else if (type === 'vane_unbal') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-fan text-blue-400 mr-1"></i> Bomba de Palhetas Não-Balanceada`;
+        lblParam.innerText = "Excentricidade (mm):";
+        sliderParam.min = 5; sliderParam.max = 35; sliderParam.value = 22;
+        descMecanismo.innerText = "Anel externo circular com rotor excêntrico. Possui apenas uma zona de alta pressão, gerando uma força resultante única que empurra o eixo para o lado de sucção.";
+        calcCarga.innerText = "Alta (Força Unilateral)";
+        calcCarga.className = "font-mono text-rose-400 font-bold";
+      } else if (type === 'vane_bal') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-circle-nodes text-blue-400 mr-1"></i> Bomba de Palhetas Balanceada`;
+        lblParam.innerText = "Número de Palhetas:";
+        sliderParam.min = 6; sliderParam.max = 16; sliderParam.value = 10;
+        descMecanismo.innerText = "Possui carcaça elíptica (oval) e rotor centralizado. Cria duas zonas de alta pressão a 180° de distância. As forças se anulam mutuamente, garantindo Carga Radial Zero!";
+        calcCarga.innerText = "ZERO (Forças Anuladas)";
+        calcCarga.className = "font-mono text-emerald-400 font-bold";
+      } else if (type === 'piston') {
+        pumpTitle.innerHTML = `<i class="fa-solid fa-sliders text-blue-400 mr-1"></i> Bomba de Pistões Axiais (Swashplate)`;
+        lblParam.innerText = "Inclinação do Plato (°):";
+        sliderParam.min = 5; sliderParam.max = 30; sliderParam.value = 18;
+        descMecanismo.innerText = "Pistões dispostos axialmente deslizam sobre uma placa inclinada (Swashplate). A rotação faz os pistões aspirarem e expelirem óleo com altíssima eficiência e baixa pulsação.";
+        calcCarga.innerText = "Compensada (Axial)";
+        calcCarga.className = "font-mono text-sky-400 font-bold";
+      }
+
+      updateControls();
+    }
+
+    function togglePlay() {
+      isRunning = !isRunning;
+      document.getElementById('txt-play').innerText = isRunning ? "Pausar Simulação" : "Iniciar Simulação";
+      document.getElementById('icon-play').className = isRunning ? "fa-solid fa-pause" : "fa-solid fa-play";
+      document.getElementById('txt-status').innerText = isRunning ? "Em Operação" : "Pausado";
+      document.getElementById('txt-status').className = isRunning ? "text-emerald-400 font-mono font-bold" : "text-amber-400 font-mono font-bold";
+    }
+
+    function updateControls() {
+      rpm = parseFloat(document.getElementById('slider-rpm').value);
+      customParam = parseFloat(document.getElementById('slider-param').value);
+
+      document.getElementById('val-rpm').innerText = `${rpm} RPM`;
+      document.getElementById('val-param').innerText = customParam;
+
+      let vazao = ((rpm / 1200) * (customParam / 10) * 36).toFixed(1);
+      document.getElementById('calc-vazao').innerText = `${vazao} L/min`;
+    }
+
+    // --- FUNÇÕES DE DESENHO DA BOMBA ---
+
+    // 1. ENGRENAGENS EXTERNAS
+    function drawGearPump(centerX, centerY) {
+      const r = 65;
+      const teeth = customParam;
+      const offset = 58;
+
+      // Carcaça
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(centerX - offset, centerY, r + 16, 0.5 * Math.PI, 1.5 * Math.PI);
+      ctx.arc(centerX + offset, centerY, r + 16, 1.5 * Math.PI, 0.5 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Engrenagem Esquerda & Direita
+      drawSingleGear(centerX - offset, centerY, r, teeth, angle, '#2563eb');
+      drawSingleGear(centerX + offset, centerY, r, teeth, -angle + (Math.PI / teeth), '#1d4ed8');
+
+      // VETOR DE CARGA RADIAL (Setas indicando empurrão para a entrada)
+      drawArrow(centerX - offset, centerY - 20, centerX - offset, centerY + 35, '#f59e0b', 3, 'Carga Radial');
+      drawArrow(centerX + offset, centerY - 20, centerX + offset, centerY + 35, '#f59e0b', 3, 'Carga Radial');
+    }
+
+    function drawSingleGear(cx, cy, radius, teeth, rotation, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+
+      ctx.beginPath();
+      const points = teeth * 4;
+      for (let i = 0; i <= points; i++) {
+        const a = (i / points) * Math.PI * 2;
+        const toothMod = Math.sin(a * teeth);
+        const currentR = radius + (toothMod > 0 ? 12 : -6);
+        const x = Math.cos(a) * currentR;
+        const y = Math.sin(a) * currentR;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
+      ctx.fillStyle = '#0284c7';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 2. PALHETAS NÃO-BALANCEADA
+    function drawVaneUnbalanced(centerX, centerY) {
+      const camRadius = 115;
+      const rotorRadius = 68;
+      const e = customParam;
+      const vanes = 8;
+
+      // Anel Circular
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, camRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Rotor Excêntrico
+      const rotorX = centerX - e;
+      ctx.beginPath();
+      ctx.arc(rotorX, centerY, rotorRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Palhetas
+      for (let i = 0; i < vanes; i++) {
+        const vaneAngle = angle + (i * (Math.PI * 2 / vanes));
+        const cosA = Math.cos(vaneAngle);
+        const sinA = Math.sin(vaneAngle);
+        const tipDist = -e * cosA + Math.sqrt(camRadius * camRadius - (e * sinA) * (e * sinA));
+
+        ctx.beginPath();
+        ctx.moveTo(rotorX + cosA * 12, centerY + sinA * 12);
+        ctx.lineTo(rotorX + cosA * tipDist, centerY + sinA * tipDist);
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+
+      // Vetor de Carga Unilateral
+      drawArrow(rotorX + 50, centerY, rotorX - 45, centerY, '#ef4444', 4, 'Força Unilateral');
+    }
+
+    // 3. PALHETAS BALANCEADA
+    function drawVaneBalanced(centerX, centerY) {
+      const rx = 130; // Raio Maior da Elipse
+      const ry = 95;  // Raio Menor da Elipse
+      const rotorRadius = 65;
+      const vanes = customParam;
+
+      // Anel Elíptico (Oval)
+      ctx.beginPath();
+      ctx.ellipse(centerX, centerY, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Rotor Centralizado
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, rotorRadius, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fill();
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Palhetas e Câmaras Simétricas
+      for (let i = 0; i < vanes; i++) {
+        const vaneAngle = angle + (i * (Math.PI * 2 / vanes));
+        const cosA = Math.cos(vaneAngle);
+        const sinA = Math.sin(vaneAngle);
+
+        // Distância até o anel elíptico
+        const rElipse = (rx * ry) / Math.sqrt((ry * cosA) ** 2 + (rx * sinA) ** 2);
+
+        ctx.beginPath();
+        ctx.moveTo(centerX + cosA * 12, centerY + sinA * 12);
+        ctx.lineTo(centerX + cosA * rElipse, centerY + sinA * rElipse);
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+
+      // Duas forças opostas que se anulam
+      drawArrow(centerX - 80, centerY, centerX - 15, centerY, '#22c55e', 3, 'F1');
+      drawArrow(centerX + 80, centerY, centerX + 15, centerY, '#22c55e', 3, 'F2 (Canceladas)');
+    }
+
+    // 4. BISTÕES AXIAIS (SWASHPLATE)
+    function drawAxialPistonPump(centerX, centerY) {
+      const angleRad = (customParam * Math.PI) / 180;
+      const numPistons = 5;
+
+      // Swashplate (Placa Inclinada)
+      ctx.save();
+      ctx.translate(centerX - 100, centerY);
+      ctx.rotate(-angleRad);
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(-10, -80, 20, 160);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-10, -80, 20, 160);
+      ctx.restore();
+
+      // Bloco de Cilindros Rotativo
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 4;
+      ctx.fillRect(centerX - 40, centerY - 65, 140, 130);
+
+      // Pistões e hastes
+      for (let i = 0; i < numPistons; i++) {
+        const pPhase = angle + (i * (Math.PI * 2 / numPistons));
+        const pY = centerY - 45 + i * 22;
+
+        // Curso do pistão baseado na inclinação do plato
+        const stroke = Math.sin(pPhase) * Math.tan(angleRad) * 45;
+        const headX = centerX - 40 + stroke;
+
+        // Haste até o Swashplate
+        ctx.beginPath();
+        ctx.moveTo(centerX - 100 + (pY - centerY) * Math.sin(angleRad), pY);
+        ctx.lineTo(headX, pY);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Cabeça do Pistão
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(headX, pY - 6, 30, 12);
+      }
+    }
+
+    // DESENHAR SETAS DE FUERZA (VEKTOR)
+    function drawArrow(fromx, fromy, tox, toy, color, width, label) {
+      const headlen = 10;
+      const dx = tox - fromx;
+      const dy = toy - fromy;
+      const headAngle = Math.atan2(dy, dx);
+
+      ctx.beginPath();
+      ctx.moveTo(fromx, fromy);
+      ctx.lineTo(tox, toy);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(tox, toy);
+      ctx.lineTo(tox - headlen * Math.cos(headAngle - Math.PI / 6), toy - headlen * Math.sin(headAngle - Math.PI / 6));
+      ctx.lineTo(tox - headlen * Math.cos(headAngle + Math.PI / 6), toy - headlen * Math.sin(headAngle + Math.PI / 6));
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      if (label) {
+        ctx.font = '10px monospace';
+        ctx.fillStyle = color;
+        ctx.fillText(label, fromx - 15, fromy - 8);
+      }
+    }
+
+    // SIMULACION TI FLUIDO (PARTICULAS)
+    function renderParticles(centerX, centerY) {
+      const speed = (rpm / 1200) * 0.008;
+
+      particles.forEach(p => {
+        if (isRunning) {
+          p.progress += speed * p.speedOffset;
+          if (p.progress > 1) p.progress = 0;
         }
 
-        // --- CLASSE DE PARTÍCULAS DO ESCOAMENTO ---
-        class Particle {
-            constructor(x, yRelative, pipeCenterY, pipeRadiusPx, fluidKey) {
-                this.x = x;
-                this.yRelative = yRelative; // de -R_px até +R_px
-                this.pipeCenterY = pipeCenterY;
-                this.pipeRadiusPx = pipeRadiusPx;
-                this.fluidKey = fluidKey;
-                this.radius = fluidKey === 'water' ? 2.5 : 3.5;
-            }
+        let px, py;
 
-            update(vMaxPhys, R_m, reynolds) {
-                const r_m = (Math.abs(this.yRelative) / this.pipeRadiusPx) * R_m;
-                
-                // Perfil Parabólico de Poiseuille: v(r) = vMax * (1 - (r/R)^2)
-                let v_r = vMaxPhys * (1 - Math.pow(r_m / R_m, 2));
-                if (v_r < 0) v_r = 0;
-
-                // Fator de escala visual para animação fluida no canvas
-                const visualSpeedScale = 12.0; 
-                let vx = v_r * visualSpeedScale;
-
-                // Se o fluxo for turbulento (Re > 4000), adiciona flutuações randômicas
-                if (reynolds > 4000) {
-                    this.yRelative += (Math.random() - 0.5) * 1.2;
-                    // Limita dentro da parede do tubo
-                    if (Math.abs(this.yRelative) > this.pipeRadiusPx - 2) {
-                        this.yRelative = Math.sign(this.yRelative) * (this.pipeRadiusPx - 2);
-                    }
-                }
-
-                this.x += vx;
-                return this.x <= canvas.width;
-            }
-
-            draw(context) {
-                const drawY = this.pipeCenterY + this.yRelative;
-                context.beginPath();
-                context.arc(this.x, drawY, this.radius, 0, Math.PI * 2);
-                context.fillStyle = FLUIDS[this.fluidKey].particleColor;
-                context.fill();
-            }
+        if (activePump === 'gear') {
+          if (p.progress < 0.2) {
+            px = centerX + p.offsetY;
+            py = (centerY + 160) - (p.progress / 0.2) * 100;
+          } else if (p.progress < 0.8) {
+            const subP = (p.progress - 0.2) / 0.6;
+            const a = Math.PI * 0.5 + p.side * subP * Math.PI;
+            px = (centerX + p.side * 58) + Math.cos(a) * 75;
+            py = centerY + Math.sin(a) * 75;
+          } else {
+            px = centerX + p.offsetY;
+            py = (centerY - 60) - ((p.progress - 0.8) / 0.2) * 100;
+          }
+        } else if (activePump === 'vane_unbal') {
+          const a = Math.PI * 0.5 - p.progress * Math.PI * 2;
+          px = (centerX - customParam) + Math.cos(a) * (85 + p.offsetY * 0.5);
+          py = centerY + Math.sin(a) * (85 + p.offsetY * 0.5);
+        } else if (activePump === 'vane_bal') {
+          const a = Math.PI * 0.5 - p.progress * Math.PI * 2;
+          px = centerX + Math.cos(a) * (95 + p.offsetY * 0.4);
+          py = centerY + Math.sin(a) * (75 + p.offsetY * 0.4);
+        } else if (activePump === 'piston') {
+          px = (centerX - 130) + p.progress * 240;
+          py = centerY + (p.side * 35) + p.offsetY * 0.5;
         }
 
-        // --- CÁLCULOS FÍSICOS E REPOSITÓRIO DE DADOS ---
-        function getPhysicsData(fluidKey) {
-            const P_kPa = parseFloat(document.getElementById('sliderPressure').value);
-            const D_mm = parseFloat(document.getElementById('sliderDiameter').value);
-            const L_m = parseFloat(document.getElementById('sliderLength').value);
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.progress < 0.5 ? '#22c55e' : '#ef4444';
+        ctx.fill();
+      });
+    }
 
-            const deltaP = P_kPa * 1000; // Pa
-            const R_m = (D_mm / 1000) / 2; // m
-            const fluid = FLUIDS[fluidKey];
+    // LOOP PRINCIPAL TI ANIMASION
+    function animate() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
-            // Velocidade Máxima no centro (r=0): vMax = (ΔP * R²) / (4 * μ * L)
-            const vMax = (deltaP * Math.pow(R_m, 2)) / (4 * fluid.viscosity * L_m);
-            // Velocidade Média: vMean = vMax / 2
-            const vMean = vMax / 2;
-            
-            // Área da Seção Transversal: A = π * R²
-            const area = Math.PI * Math.pow(R_m, 2);
-            // Vazão Volumétrica: Q = A * vMean (m³/s)
-            const Q_m3s = area * vMean;
-            const Q_Lmin = Q_m3s * 60000; // L/min
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
 
-            // Número de Reynolds: Re = (ρ * vMean * D) / μ
-            const Re = (fluid.density * vMean * (D_mm / 1000)) / fluid.viscosity;
+      if (isRunning) {
+        angle += (rpm / 60) * 0.05;
+        if (angle > Math.PI * 2) angle -= Math.PI * 2;
+      }
 
-            // Tensão de Cisalhamento na parede: τ_w = (ΔP * R) / (2 * L)
-            const tauWall = (deltaP * R_m) / (2 * L_m);
+      if (activePump === 'gear') drawGearPump(centerX, centerY);
+      else if (activePump === 'vane_unbal') drawVaneUnbalanced(centerX, centerY);
+      else if (activePump === 'vane_bal') drawVaneBalanced(centerX, centerY);
+      else if (activePump === 'piston') drawAxialPistonPump(centerX, centerY);
 
-            return { P_kPa, deltaP, D_mm, R_m, L_m, fluid, vMax, vMean, Q_m3s, Q_Lmin, Re, tauWall };
-        }
+      renderParticles(centerX, centerY);
 
-        // --- ATUALIZAÇÃO DA INTERFACE E TELEMETRIA ---
-        function updateUI() {
-            const data = getPhysicsData(currentFluidKey);
-
-            document.getElementById('lblPressure').innerText = `${data.P_kPa.toFixed(1)} kPa`;
-            document.getElementById('lblDiameter').innerText = `${data.D_mm.toFixed(1)} mm`;
-            document.getElementById('lblLength').innerText = `${data.L_m.toFixed(1)} m`;
-
-            document.getElementById('valVisc').innerText = `${(data.fluid.viscosity * 1000).toFixed(2)} mPa·s`;
-            document.getElementById('descVisc').innerText = data.fluid.name;
-
-            document.getElementById('valFlow').innerText = `${data.Q_Lmin.toFixed(1)} L/min`;
-            document.getElementById('valVel').innerText = `Velocidade Média: ${data.vMean.toFixed(2)} m/s`;
-
-            document.getElementById('valReynolds').innerText = Math.round(data.Re).toLocaleString('pt-BR');
-            document.getElementById('valTau').innerText = `${data.tauWall.toFixed(2)} Pa`;
-
-            // Badge de Regime de Escoamento
-            const badge = document.getElementById('badgeRegime');
-            if (data.Re < 2000) {
-                badge.className = 'badge badge-laminar';
-                badge.innerText = 'Escoamento Laminar';
-            } else if (data.Re <= 4000) {
-                badge.className = 'badge badge-trans';
-                badge.innerText = 'Zona de Transição';
-            } else {
-                badge.className = 'badge badge-turb';
-                badge.innerText = 'Escoamento Turbulento';
-            }
-
-            // Atualização do cálculo interativo na tela
-            document.getElementById('formulaCalc').innerHTML = 
-                `Q = (&pi; &times; ${data.deltaP} &times; ${data.R_m.toFixed(4)}<sup>4</sup>) / (8 &times; ${data.fluid.viscosity} &times; ${data.L_m})<br>` +
-                `<span class="formula-highlight">Q = ${data.Q_m3s.toFixed(5)} m³/s = ${data.Q_Lmin.toFixed(2)} L/min</span>`;
-
-            // Atualiza o Gráfico de Perfil Transversal
-            updateChart(data);
-        }
-
-        function updateChart(data) {
-            if (!profileChart) return;
-
-            const points = 21;
-            const labels = [];
-            const velocities = [];
-
-            for (let i = 0; i < points; i++) {
-                const r_mm = -data.D_mm / 2 + (i / (points - 1)) * data.D_mm;
-                const r_m = Math.abs(r_mm) / 1000;
-                let v = data.vMax * (1 - Math.pow(r_m / data.R_m, 2));
-                if (v < 0) v = 0;
-
-                labels.push(r_mm.toFixed(1));
-                velocities.push(v.toFixed(3));
-            }
-
-            profileChart.data.labels = labels;
-            profileChart.data.datasets[0].data = velocities;
-            profileChart.data.datasets[0].borderColor = data.fluid.color;
-            profileChart.data.datasets[0].backgroundColor = data.fluid.color === '#38bdf8' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(251, 191, 36, 0.15)';
-            profileChart.update();
-        }
-
-        // --- RENDERIZAÇÃO DO CANVAS ---
-        function drawPipeStructure(centerY, radiusPx, labelText) {
-            // Paredes Metálicas Superior e Inferior
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(0, centerY - radiusPx - 8, canvas.width, 8); // Topo
-            ctx.fillRect(0, centerY + radiusPx, canvas.width, 8);     // Fundo
-
-            // Brilho/Contorno metálico
-            ctx.fillStyle = '#64748b';
-            ctx.fillRect(0, centerY - radiusPx - 2, canvas.width, 2);
-            ctx.fillRect(0, centerY + radiusPx, canvas.width, 2);
-
-            // Linha Centro do Tubo
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-            ctx.setLineDash([6, 6]);
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Rótulo da tubulação
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'bold 12px Segoe UI';
-            ctx.fillText(labelText, 15, centerY - radiusPx - 14);
-        }
-
-        function drawVelocityVectors(centerY, radiusPx, vMax) {
-            const stepY = radiusPx / 5;
-            ctx.strokeStyle = 'rgba(74, 222, 128, 0.5)';
-            ctx.fillStyle = 'rgba(74, 222, 128, 0.8)';
-
-            for (let yRel = -radiusPx + stepY; yRel < radiusPx; yRel += stepY) {
-                const rRatio = Math.abs(yRel) / radiusPx;
-                const len = (1 - rRatio * rRatio) * 60; // Comprimento do vetor proporcional
-                
-                if (len > 2) {
-                    const drawY = centerY + yRel;
-                    const startX = 100;
-                    const endX = startX + len;
-
-                    // Linha da flecha
-                    ctx.beginPath();
-                    ctx.moveTo(startX, drawY);
-                    ctx.lineTo(endX, drawY);
-                    ctx.stroke();
-
-                    // Ponta da flecha
-                    ctx.beginPath();
-                    ctx.moveTo(endX, drawY - 3);
-                    ctx.lineTo(endX + 5, drawY);
-                    ctx.lineTo(endX, drawY + 3);
-                    ctx.fill();
-                }
-            }
-        }
-
-        function drawParabolaProfile(centerY, radiusPx) {
-            ctx.strokeStyle = '#f87171';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            const startX = 100;
-            for (let yRel = -radiusPx; yRel <= radiusPx; yRel += 2) {
-                const rRatio = Math.abs(yRel) / radiusPx;
-                const len = (1 - rRatio * rRatio) * 60;
-                const px = startX + len;
-                const py = centerY + yRel;
-
-                if (yRel === -radiusPx) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
-            }
-            ctx.stroke();
-            ctx.lineWidth = 1;
-        }
-
-        // --- LOOP PRINCIPAL DE ANIMAÇÃO ---
-        let spawnTimer = 0;
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const showVectors = document.getElementById('chkVectors').checked;
-            const showParabola = document.getElementById('chkParabola').checked;
-            const showParticles = document.getElementById('chkParticles').checked;
-
-            if (currentMode === 'single') {
-                const data = getPhysicsData(currentFluidKey);
-                const centerY = canvas.height / 2;
-                const radiusPx = (data.D_mm / 100) * 110; // Escala visual proporcional de raio
-
-                drawPipeStructure(centerY, radiusPx, `Tubulação Principal - ${data.fluid.name}`);
-
-                if (showVectors) drawVelocityVectors(centerY, radiusPx, data.vMax);
-                if (showParabola) drawParabolaProfile(centerY, radiusPx);
-
-                // Gerar frentes verticais de partículas estruturadas
-                spawnTimer++;
-                if (spawnTimer >= 10 && showParticles) {
-                    for (let yRel = -radiusPx + 4; yRel < radiusPx; yRel += 8) {
-                        particles.push(new Particle(0, yRel, centerY, radiusPx, currentFluidKey));
-                    }
-                    spawnTimer = 0;
-                }
-
-                // Atualizar e desenhar partículas
-                particles = particles.filter(p => {
-                    const active = p.update(data.vMax, data.R_m, data.Re);
-                    if (active && showParticles) p.draw(ctx);
-                    return active;
-                });
-
-            } else {
-                // MODO COMPARATIVO LADO A LADO
-                const dataWater = getPhysicsData('water');
-                const dataOil = getPhysicsData('oil');
-
-                const centerY1 = 95;
-                const centerY2 = 285;
-                const radiusPx = (dataWater.D_mm / 100) * 75;
-
-                drawPipeStructure(centerY1, radiusPx, `Fluido A: ${dataWater.fluid.name}`);
-                drawPipeStructure(centerY2, radiusPx, `Fluido B: ${dataOil.fluid.name}`);
-
-                if (showVectors) {
-                    drawVelocityVectors(centerY1, radiusPx, dataWater.vMax);
-                    drawVelocityVectors(centerY2, radiusPx, dataOil.vMax);
-                }
-                if (showParabola) {
-                    drawParabolaProfile(centerY1, radiusPx);
-                    drawParabolaProfile(centerY2, radiusPx);
-                }
-
-                spawnTimer++;
-                if (spawnTimer >= 10 && showParticles) {
-                    for (let yRel = -radiusPx + 4; yRel < radiusPx; yRel += 8) {
-                        particles.push(new Particle(0, yRel, centerY1, radiusPx, 'water'));
-                        particles.push(new Particle(0, yRel, centerY2, radiusPx, 'oil'));
-                    }
-                    spawnTimer = 0;
-                }
-
-                particles = particles.filter(p => {
-                    const d = p.fluidKey === 'water' ? dataWater : dataOil;
-                    const active = p.update(d.vMax, d.R_m, d.Re);
-                    if (active && showParticles) p.draw(ctx);
-                    return active;
-                });
-            }
-
-            requestAnimationFrame(animate);
-        }
-
-        // --- CONTROLE DE EVENTOS E MUDANÇAS ---
-        function setFluid(type) {
-            currentFluidKey = type;
-            document.getElementById('btnWater').className = type === 'water' ? 'active-water' : '';
-            document.getElementById('btnOil').className = type === 'oil' ? 'active-oil' : '';
-            particles = [];
-            updateUI();
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('btnSingleMode').className = mode === 'single' ? 'active-mode' : '';
-            document.getElementById('btnCompareMode').className = mode === 'compare' ? 'active-mode' : '';
-            particles = [];
-            updateUI();
-        }
-
-        function onParamChange() {
-            updateUI();
-        }
-
-        function draw() {
-            // Força um ciclo de redesenho limpo caso a animação esteja pausada
-        }
-
-        // --- INICIALIZAÇÃO ---
-        window.onload = () => {
-            initChart();
-            updateUI();
-            animate();
-        };
-    </script>
+      requestAnimationFrame(animate);
+    }
+  </script>
 </body>
 </html>
